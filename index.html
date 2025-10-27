@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Environmental Protection & Control Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --scampi: #635d9e; --patina: #66a286; --picton-blue: #54c0e8;
+  --hippie-blue: #5f84b5; --juniper: #658a8e; --fountain-blue: #5bb4c2;
+  --breaker-bay: #63a597; --primary-gradient: linear-gradient(135deg, #5f84b5 0%, #635d9e 100%);
+  --success-gradient: linear-gradient(135deg, #66a286 0%, #63a597 100%);
+  --warning-gradient: linear-gradient(135deg, #54c0e8 0%, #5bb4c2 100%);
+  --info-gradient: linear-gradient(135deg, #635d9e 0%, #54c0e8 100%);
+  --gray-dark: #2d3748; --gray-light: #e2e8f0; --white: #ffffff;
+  --text-primary: #2d3748; --text-secondary: #718096;
+  --shadow-sm: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+}
+body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); color: var(--text-primary); line-height: 1.6; }
+header { background: var(--primary-gradient); color: var(--white); padding: 1.5rem 0; box-shadow: var(--shadow-lg); position: sticky; top: 0; z-index: 100; }
+.header-content { max-width: 1600px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.header-logo { height: 50px; }
+header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.5px; }
+.header-title-section { display: flex; align-items: center; gap: 1rem; }
+.date-display { font-size: 0.95rem; opacity: 0.9; }
+.container { max-width: 1600px; margin: 2rem auto; padding: 0 2rem; }
+.filters { background: var(--white); padding: 1.5rem 2rem; border-radius: 16px; box-shadow: var(--shadow-md); margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
+.filter-section { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.filter-title { font-weight: 600; color: var(--hippie-blue); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.filter-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.filter-btn { padding: 0.6rem 1.25rem; border-radius: 50px; border: 2px solid #e2e8f0; background: var(--white); color: var(--text-primary); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+.filter-btn:hover { border-color: var(--hippie-blue); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(95,132,181,0.15); }
+.filter-btn.active { background: var(--primary-gradient); color: var(--white); border-color: var(--hippie-blue); box-shadow: 0 4px 12px rgba(95,132,181,0.3); }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+.kpi-card { background: var(--white); border-radius: 16px; padding: 1.75rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; position: relative; overflow: hidden; }
+.kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--primary-gradient); transform: scaleX(0); transition: transform 0.3s ease; }
+.kpi-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-xl); }
+.kpi-card:hover::before { transform: scaleX(1); }
+.kpi-card.success::before { background: var(--success-gradient); } .kpi-card.warning::before { background: var(--warning-gradient); } .kpi-card.info::before { background: var(--info-gradient); }
+.kpi-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+.kpi-icon { font-size: 2.5rem; opacity: 0.9; }
+.kpi-badge { background: var(--gray-light); color: var(--text-secondary); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+.kpi-content h4 { font-size: 0.875rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem; }
+.kpi-content .value { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
+.kpi-content .unit { font-size: 0.95rem; color: var(--text-secondary); margin-left: 0.25rem; }
+.section-header { display: flex; align-items: center; gap: 1rem; margin: 3rem 0 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--gray-light); }
+.section-header h2 { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; }
+.full-width-chart-container { background: var(--white); border-radius: 16px; padding: 1.5rem 2rem; box-shadow: var(--shadow-md); margin-bottom: 2rem; height: 450px; display: flex; flex-direction: column; transition: all 0.3s ease; position: relative; }
+.full-width-chart-container canvas { display: block !important; max-height: 400px; }
+.full-width-chart-container:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+.chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem; margin-bottom: 2.5rem; }
+.chart-container { background: var(--white); border-radius: 16px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all 0.3s ease; height: 400px; display: flex; flex-direction: column; position: relative; }
+.chart-container canvas { display: block !important; max-height: 350px; }
+.chart-container > div { flex: 1; display: flex; flex-direction: column; position: relative; }
+.chart-container:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+.two-chart-equal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2.5rem; }
+.table-section { background: var(--white); border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-lg); overflow-x: auto; margin-bottom: 2rem; }
+.table-section table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.table-section th, .table-section td { padding: 1.25rem 1rem; text-align: left; border-bottom: 1px solid var(--gray-light); vertical-align: middle; }
+.table-section th { font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary); background: #f8f9fa; position: sticky; top: 0; z-index: 10; }
+.table-section tbody tr { transition: all 0.2s ease; }
+.table-section tbody tr:hover { background-color: #f8f9fa; transform: translateX(3px); box-shadow: -3px 0 0 0 var(--hippie-blue); }
+.status-badge { display: inline-block; padding: 0.4rem 1rem; border-radius: 25px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: white; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease; }
+.status-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+.status-compliant, .status-pass, .status-passed, .status-ok, .status-good { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+.status-within-limits, .status-within-range, .status-within { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+.status-warning, .status-caution { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+.status-fail, .status-failed, .status-exceeded { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+.status-na, .status-info { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); }
+.hierarchy-flow-container { display: flex; flex-direction: column; gap: 0.75rem; }
+.flow-item { display: flex; align-items: center; gap: 1rem; background: #f8f9fa; border-radius: 8px; padding: 0.75rem 1rem; border-left: 5px solid; }
+.flow-item-icon { font-size: 1.5rem; }
+.flow-item-content { flex-grow: 1; }
+.flow-item-label { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.25rem; }
+.flow-bar-container { height: 20px; background: #e2e8f0; border-radius: 5px; overflow: hidden; }
+.flow-bar { height: 100%; background-color: var(--color); transition: width 0.8s ease-out; }
+.flow-item:nth-of-type(1) { border-color: var(--patina); } .flow-item:nth-of-type(1) .flow-bar { background-color: var(--patina); }
+.flow-item:nth-of-type(2) { border-color: var(--hippie-blue); } .flow-item:nth-of-type(2) .flow-bar { background-color: var(--hippie-blue); }
+.flow-item:nth-of-type(3) { border-color: var(--fountain-blue); } .flow-item:nth-of-type(3) .flow-bar { background-color: var(--fountain-blue); }
+.flow-item:nth-of-type(4) { border-color: var(--juniper); } .flow-item:nth-of-type(4) .flow-bar { background-color: var(--juniper); }
+footer { text-align: center; padding: 2rem; color: var(--text-secondary); font-size: 0.875rem; margin-top: 2rem; }
+@media (max-width: 1200px) { .two-chart-equal-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .header-content { flex-direction: column; text-align: center; } .chart-grid, .kpi-grid { grid-template-columns: 1fr; } .filters, .filter-section { flex-direction: column; align-items: stretch; } }
+#observationChart { max-width: 100% !important; max-height: 100% !important; }
+#observationChartContainer { overflow: hidden; }
+.status-cell-pass { background-color: #ecfdf5; border-left: 4px solid #10b981; }
+.status-cell-warning { background-color: #fef3c7; border-left: 4px solid #f59e0b; }
+.status-cell-fail { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+.status-cell-info { background-color: #f1f5f9; border-left: 4px solid #64748b; }
+.table-section tbody tr:hover .status-cell-pass, .table-section tbody tr:hover .status-cell-warning, .table-section tbody tr:hover .status-cell-fail, .table-section tbody tr:hover .status-cell-info { background-color: #f8fafc; border-left-width: 6px; }
+.tiny-icon {
+  width: 40px;          /* حجم صغير جدًا مثل الأيقونة */
+  height: 40px;
+  vertical-align: middle; /* لتكون بمحاذاة النص */
+  margin-right: 6px;      /* مسافة بسيطة بين الأيقونة والعنوان */
+  opacity: 0.9;           /* شفافية خفيفة (اختياري لتبدو ناعمة) */
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-content">
+    <div class="header-title-section">
+      <img src="logo.png" alt="Company Logo" class="header-logo" ; border-radius: 8px; padding: 4px;">
+      <h1>Environmental Protection & Control Dashboard</h1>
+    </div>
+    <div class="date-display" id="currentDate"></div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="filters fade-in">
+    <div class="filter-section">
+      <span class="filter-title">📅 SELECT PERIOD:</span>
+      <div class="filter-buttons" id="periodButtons"></div>
+    </div>
+    <div class="filter-section">
+      <span class="filter-title">🏭 SELECT FACILITY:</span>
+      <div class="filter-buttons" id="facilityButtons"></div>
+    </div>
+  </div>
+
+  <div class="kpi-grid fade-in" id="kpiSection"></div>
+
+  <div class="section-header fade-in">
+    <h2>📊 Operational Performance Metrics</h2>
+  </div>
+  <div class="full-width-chart-container fade-in">
+    <canvas id="incomingWasteChart"></canvas>
+  </div>
+  
+  <div class="chart-grid fade-in">
+    <div class="chart-container"><canvas id="treatmentChart"></canvas></div>
+    <div class="chart-container"><canvas id="recoveryTrendChart"></canvas></div>
+  </div>
+  
+  <div class="chart-grid fade-in">
+    <div class="chart-container"><canvas id="utilityChart"></canvas></div>
+    <div class="chart-container"><canvas id="solidificationChart"></canvas></div>
+  </div>
+
+  <div class="section-header fade-in">
+    <h2>📦 Resource Management & Efficiency</h2>
+  </div>
+  <div class="chart-grid fade-in">
+    <div class="chart-container"><canvas id="sourceRecoveryChart"></canvas></div>
+    <div class="chart-container"><canvas id="treatmentEfficiencyChart"></canvas></div>
+  </div>
+
+  <div class="section-header fade-in">
+    <h2>📋 Compliance & Waste Management</h2>
+  </div>
+  <div class="chart-grid fade-in">
+    <div class="chart-container"><canvas id="observationChart"></canvas></div>
+    <div class="chart-container"><canvas id="waterConsumptionChart"></canvas></div>
+  </div>
+
+  <div class="full-width-chart-container fade-in">
+    <h2><img src="4R.png" alt="4R Icon" class="tiny-icon">   Waste Management Hierarchy</h2>
+    <div id="hierarchy-flow" class="hierarchy-flow-container" style="padding: 2rem;"></div>
+  </div>
+
+  <div class="section-header fade-in">
+    <h2>🌍 Environmental Monitoring</h2>
+  </div>
+  <div class="table-section fade-in">
+    <table id="environmentTable"></table>
+  </div>
+</div>
+
+<footer>© 2025 Developed By Abdulrahman Fayyadh - REVIVA, E&S Sector</footer>
+
+<script>
+// Chart defaults
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.color = '#4a5568';
+Chart.register(ChartDataLabels);
+Chart.defaults.set('plugins.datalabels', { display: false });
+
+let chartInstances = {};
+let allData = [];
+let availablePeriods = [], availableLocations = [];
+let currentPeriod = 'YTD', currentLocation = 'ALL';
+
+function createFilterButtons() {
+  const periodContainer = document.getElementById('periodButtons');
+  periodContainer.innerHTML = '';
+  ['YTD', ...availablePeriods].forEach(period => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.textContent = period;
+    btn.dataset.value = period;
+    if (period === currentPeriod) btn.classList.add('active');
+    btn.addEventListener('click', () => selectPeriod(period));
+    periodContainer.appendChild(btn);
+  });
+
+  const facilityContainer = document.getElementById('facilityButtons');
+  facilityContainer.innerHTML = '';
+  ['ALL', ...availableLocations].forEach(location => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.textContent = location;
+    btn.dataset.value = location;
+    if (location === currentLocation) btn.classList.add('active');
+    btn.addEventListener('click', () => selectLocation(location));
+    facilityContainer.appendChild(btn);
+  });
+}
+
+function selectPeriod(period) {
+  currentPeriod = period;
+  document.querySelectorAll('#periodButtons .filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.value === period));
+  updateDashboard();
+}
+
+function selectLocation(location) {
+  currentLocation = location;
+  document.querySelectorAll('#facilityButtons .filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.value === location));
+  updateDashboard();
+}
+
+async function loadDashboardData() {
+    try {
+        const response = await fetch('dashboard_data.json');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const jsonData = await response.json();
+        
+        allData = jsonData.Data; 
+
+        availablePeriods = [...new Set(allData.map(r => r.Date))].sort();
+        availableLocations = [...new Set(allData.map(r => r.Location))].filter(l => l).sort();
+        
+        createFilterButtons();
+        updateDashboard();
+
+    } catch (error) { 
+        console.error('Error loading dashboard data:', error);
+        document.getElementById('kpiSection').innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #ef4444;"><strong>⚠️ Error loading data</strong><br>Please check that 'dashboard_data.json' exists and is correctly formatted.</div>`;
+    }
+}
+
+function updateDashboard() {
+    const filteredData = filterData(allData, currentPeriod, currentLocation);
+    const chartData = processChartData(filteredData, availablePeriods, availableLocations);
+    
+    renderKPIs(chartData.kpis);
+    renderCharts(chartData.charts);
+}
+
+function filterData(data, period, location) {
+    let filtered = data;
+    if (period !== 'YTD') {
+        filtered = filtered.filter(r => r.Date === period);
+    }
+    if (location !== 'ALL') {
+        filtered = filtered.filter(r => r.Location === location);
+    }
+    return filtered;
+}
+
+// --- DATA PROCESSING FUNCTIONS ---
+
+function processChartData(rows, allPeriods, allLocations) {
+  const kpis = {
+    total_incoming: 0,
+    total_treatment: 0,
+    total_recovery: 0,
+    backlog: 0,
+    total_water: 0
+  };
+
+  rows.forEach(row => {
+    const value = parseFloat(row.Value) || 0;
+    if (row.Category === 'INCOMING WASTE') kpis.total_incoming += value;
+    if (row.Category === 'TREATMENT') kpis.total_treatment += value;
+    if (row.Category === 'SOURCE RECOVERY') kpis.total_recovery += value;
+    if (row.Category === 'BACKLOG') kpis.backlog += value;
+    if (row.Category === 'PORTABLE WATER') kpis.total_water += value;
+  });
+
+  const charts = {
+    operational_flow: processOperationalFlow(rows, allPeriods),
+    facility_comparison: processFacilityComparison(rows, allLocations),
+    recovery_overview: processRecoveryOverview(rows, allLocations),
+    utility_consumption: processUtilityConsumption(rows, allLocations),
+    solidification_ratio: processSolidificationRatio(rows),
+    observation_status: processObservationStatus(rows, allLocations),
+    environmental_monitoring: processEnvironmentalMonitoring(rows),
+    waste_hierarchy: processWasteHierarchy(rows),
+    source_recovery: processSourceRecovery(rows, allLocations),
+    treatment_efficiency: processTreatmentEfficiency(rows, allPeriods, allLocations),
+    water_consumption: processWaterConsumption(rows, allLocations)
+  };
+
+  return { kpis, charts };
+}
+
+function processOperationalFlow(rows, periods) {
+    const data = {};
+    const relevantPeriods = currentPeriod === 'YTD' ? periods : [currentPeriod];
+    relevantPeriods.forEach(p => { data[p] = { solid: 0, liquid: 0, treated: 0 }; });
+
+    rows.forEach(row => {
+        const value = parseFloat(row.Value) || 0;
+        if (data[row.Date]) {
+            if (row.Category === 'INCOMING WASTE') {
+                if (row.Detail.toLowerCase() === 'solid') data[row.Date].solid += value;
+                if (row.Detail.toLowerCase() === 'liquid') data[row.Date].liquid += value;
+            }
+            if (row.Category === 'TREATMENT') data[row.Date].treated += value;
+        }
+    });
+
+    return {
+        labels: relevantPeriods,
+        bar_data: {
+            solid: relevantPeriods.map(p => data[p].solid),
+            liquid: relevantPeriods.map(p => data[p].liquid)
+        },
+        line_data: relevantPeriods.map(p => data[p].treated)
+    };
+}
+
+function processFacilityComparison(rows, locations) {
+    const data = {};
+    const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
+    relevantLocations.forEach(loc => { data[loc] = { solid: 0, liquid: 0, treated: 0 }; });
+
+    rows.forEach(row => {
+        const value = parseFloat(row.Value) || 0;
+        const loc = row.Location;
+        if (data[loc]) {
+            if (row.Category === 'INCOMING WASTE') {
+                if (row.Detail.toLowerCase() === 'solid') data[loc].solid += value;
+                else if (row.Detail.toLowerCase() === 'liquid') data[loc].liquid += value;
+            } else if (row.Category === 'TREATMENT') {
+                data[loc].treated += value;
+            }
+        }
+    });
+    
+    const filteredLocations = relevantLocations.filter(loc => data[loc].solid > 0 || data[loc].liquid > 0 || data[loc].treated > 0);
+
+    return {
+        labels: filteredLocations,
+        datasets: {
+            solid: filteredLocations.map(loc => data[loc].solid),
+            liquid: filteredLocations.map(loc => data[loc].liquid),
+            treated: filteredLocations.map(loc => data[loc].treated),
+        }
+    };
+}
+
+function processRecoveryOverview(rows, locations) {
+    const data = {};
+    const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
+    relevantLocations.forEach(loc => data[loc] = {});
+
+    rows.filter(r => r.Category === 'SOURCE RECOVERY').forEach(row => {
+        const value = parseFloat(row.Value) || 0;
+        if (data[row.Location]) {
+             data[row.Location][row.Detail] = (data[row.Location][row.Detail] || 0) + value;
+        }
+    });
+    return data;
+}
+
+function processUtilityConsumption(rows, locations) {
+    const data = {};
+    const categories = ['DIESEL', 'PORTABLE WATER'];
+    const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
+    
+    categories.forEach(cat => data[cat] = {});
+    relevantLocations.forEach(loc => { categories.forEach(cat => data[cat][loc] = 0); });
+
+    rows.filter(r => categories.includes(r.Category)).forEach(row => {
+        const value = parseFloat(row.Value) || 0;
+        if (data[row.Category] && data[row.Category][row.Location] !== undefined) {
+             data[row.Category][row.Location] += value;
+        }
+    });
+    return data;
+}
+
+function processSolidificationRatio(rows) {
+  const data = {};
+  rows.filter(r => r.Category === 'SOLIDIFICATION').forEach(row => {
+    const key = row.Location;
+    const value = parseFloat(row.Value) || 0;
+    if (currentLocation === 'ALL' || currentLocation === key) data[key] = value;
+  });
+  const sortedLabels = Object.keys(data).sort();
+  return { labels: sortedLabels, data: sortedLabels.map(label => data[label]) };
+}
+
+// ** MODIFIED for new chart **
+function processObservationStatus(rows, locations) {
+    const data = {};
+    const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
+    const priorities = ["High (Critical)", "Medium", "Low"];
+
+    relevantLocations.forEach(loc => {
+        data[loc] = {
+            'High (Critical)_Open': 0, 'High (Critical)_Closed': 0,
+            'Medium_Open': 0, 'Medium_Closed': 0,
+            'Low_Open': 0, 'Low_Closed': 0,
+        };
+    });
+
+    rows.filter(r => r.Category === 'OBSERVATION').forEach(row => {
+        const value = parseFloat(row.Value) || 0;
+        const loc = row.Location;
+        const key = `${row.Detail}_${row.Status}`;
+        if (data[loc] && data[loc][key] !== undefined) {
+            data[loc][key] += value;
+        }
+    });
+    
+    const filteredLocations = relevantLocations.filter(loc => Object.values(data[loc]).some(v => v > 0));
+
+    const datasets = {};
+    priorities.forEach(p => {
+        datasets[`${p}_Open`] = filteredLocations.map(loc => data[loc][`${p}_Open`]);
+        datasets[`${p}_Closed`] = filteredLocations.map(loc => data[loc][`${p}_Closed`]);
+    });
+    
+    const totalOpen = Object.values(datasets).filter((_, i) => i % 2 === 0).flat().reduce((a, b) => a + b, 0);
+    const totalClosed = Object.values(datasets).filter((_, i) => i % 2 !== 0).flat().reduce((a, b) => a + b, 0);
+
+    return {
+        labels: filteredLocations,
+        datasets,
+        totals: { open: totalOpen, closed: totalClosed }
+    };
+}
+
+function processEnvironmentalMonitoring(rows) {
+  return rows.filter(r => r.Category === 'ENVIRONMENTAL MONITORING').map(row => ({
+    Location: row.Location, Parameter: row.Detail, Status: row.Value 
+  }));
+}
+
+function processWasteHierarchy(rows) {
+  const hierarchy = {
+    labels: ['Reuse', 'Recycle', 'Source Recovery', 'Treatment (Disposal)'],
+    values: [0, 0, 0, 0]
+  };
+  const reuse = rows.filter(r => r.Category === 'REUSE').reduce((sum, r) => sum + (parseFloat(r.Value) || 0), 0);
+  const recycle = rows.filter(r => r.Category === 'RECYCLE').reduce((sum, r) => sum + (parseFloat(r.Value) || 0), 0);
+  const recovery = rows.filter(r => r.Category === 'SOURCE RECOVERY').reduce((sum, r) => sum + (parseFloat(r.Value) || 0), 0);
+  const treatment = rows.filter(r => r.Category === 'TREATMENT').reduce((sum, r) => sum + (parseFloat(r.Value) || 0), 0);
+  hierarchy.values = [reuse, recycle, recovery, treatment];
+  const totalHierarchy = hierarchy.values.reduce((a, b) => a + b, 0) || 1;
+  hierarchy.percentages = hierarchy.values.map(v => Math.round((v / totalHierarchy) * 100));
+  return hierarchy;
+}
+
+// ** NEW FUNCTIONS FOR RESOURCE MANAGEMENT **
+function processSourceRecovery(rows, locations) {
+  const data = {};
+  const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
+  const recoveryTypes = ['Recovered Oil', 'Recovered Scrap'];
+  
+  relevantLocations.forEach(loc => {
+    data[loc] = { 'Recovered Oil': 0, 'Recovered Scrap': 0 };
+  });
+
+  rows.filter(r => r.Category === 'SOURCE RECOVERY').forEach(row => {
+    const value = parseFloat(row.Value) || 0;
+    if (data[row.Location] && data[row.Location][row.Detail] !== undefined) {
+      data[row.Location][row.Detail] += value;
+    }
+  });
+
+  const filteredLocations = relevantLocations.filter(loc => Object.values(data[loc]).some(v => v > 0));
+
+  return {
+    labels: filteredLocations,
+    datasets: {
+      'Recovered Oil': filteredLocations.map(loc => data[loc]['Recovered Oil']),
+      'Recovered Scrap': filteredLocations.map(loc => data[loc]['Recovered Scrap'])
+    }
+  };
+}
+
+function processTreatmentEfficiency(rows, periods, locations) {
+  const data = {};
+  const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
+  
+  relevantLocations.forEach(loc => {
+    data[loc] = { incoming: 0, treatment: 0 };
+  });
+
+  rows.forEach(row => {
+    const value = parseFloat(row.Value) || 0;
+    const loc = row.Location;
+    if (data[loc]) {
+      if (row.Category === 'INCOMING WASTE') {
+        data[loc].incoming += value;
+      } else if (row.Category === 'TREATMENT') {
+        data[loc].treatment += value;
+      }
+    }
+  });
+
+  const filteredLocations = relevantLocations.filter(loc => data[loc].incoming > 0 || data[loc].treatment > 0).sort();
+
+  return {
+    labels: filteredLocations,
+    incoming: filteredLocations.map(loc => data[loc].incoming),
+    treatment: filteredLocations.map(loc => data[loc].treatment)
+  };
+}
+
+function processWaterConsumption(rows, locations) {
+  const data = {};
+  const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
+  
+  relevantLocations.forEach(loc => {
+    data[loc] = 0;
+  });
+
+  rows.filter(r => r.Category === 'PORTABLE WATER').forEach(row => {
+    const value = parseFloat(row.Value) || 0;
+    if (data[row.Location] !== undefined) {
+      data[row.Location] += value;
+    }
+  });
+
+  const filteredLocations = relevantLocations.filter(loc => data[loc] > 0).sort();
+
+  return {
+    labels: filteredLocations,
+    data: filteredLocations.map(loc => data[loc])
+  };
+}
+
+// --- RENDERING & CHART CREATION ---
+
+function renderKPIs(kpis) {
+  const container = document.getElementById('kpiSection');
+  container.innerHTML = '';
+  const kpiConfig = [
+    { key: 'total_incoming', icon: '📥', label: 'Incoming Waste', class: 'info' },
+    { key: 'total_treatment', icon: '⚗️', label: 'Treatment Volume', class: 'warning' },
+    { key: 'total_recovery', icon: '♻️', label: 'Resource Recovery', class: 'success' },
+    { key: 'total_water', icon: '💧', label: 'Water Consumption', class: 'info' },
+    { key: 'backlog', icon: '📦', label: 'Backlog', class: '' }
+  ];
+  kpiConfig.forEach(config => {
+    const value = kpis[config.key] || 0;
+    const card = document.createElement('div');
+    card.className = `kpi-card ${config.class}`;
+    let displayValue, unit;
+    
+    if (config.key === 'total_water') {
+      const millions = value / 1000000;
+      displayValue = millions.toFixed(1);
+      unit = ' Million L';
+    } else {
+      displayValue = value.toLocaleString(undefined, {maximumFractionDigits: 0});
+      unit = config.key === 'total_water' ? ' Liters' : ' Tons';
+    }
+    
+    card.innerHTML = `<div class="kpi-header"><div class="kpi-icon">${config.icon}</div><div class="kpi-badge">${currentPeriod}</div></div><div class="kpi-content"><h4>${config.label}</h4><div><span class="value">${displayValue}</span><span class="unit">${unit}</span></div></div>`;
+    container.appendChild(card);
+  });
+}
+
+function renderCharts(charts) {
+  Object.values(chartInstances).forEach(chart => chart?.destroy());
+  chartInstances = {};
+  chartInstances.combo = createComboChart('incomingWasteChart', charts.operational_flow, 'Incoming vs. Treated Waste');
+  chartInstances.facilityComparison = createFacilityComparisonChart('treatmentChart', charts.facility_comparison, 'Performance by Facility');
+  chartInstances.recovery = createLineChart('recoveryTrendChart', charts.recovery_overview, 'Recovery Overview');
+  chartInstances.utility = createStackedBarChart('utilityChart', charts.utility_consumption, 'Utility Consumption');
+  chartInstances.solidification = createSimpleLineChart('solidificationChart', charts.solidification_ratio, 'Solidification Ratio');
+  chartInstances.sourceRecovery = createSourceRecoveryChart('sourceRecoveryChart', charts.source_recovery, '📊 Source Recovery by Location');
+  chartInstances.treatmentEfficiency = createTreatmentEfficiencyChart('treatmentEfficiencyChart', charts.treatment_efficiency, '📊 Treatment Efficiency (Incoming vs Capacity)');
+  chartInstances.waterConsumption = createWaterConsumptionPie('waterConsumptionChart', charts.water_consumption, '💧 Water Consumption by Location');
+  chartInstances.observation = createObservationChart('observationChart', charts.observation_status);
+  buildTable('environmentTable', charts.environmental_monitoring);
+  renderWasteHierarchy(charts.waste_hierarchy);
+  setTimeout(() => Object.values(chartInstances).forEach(chart => chart?.resize()), 100);
+}
+
+function createComboChart(canvasId, data, title) {
+    const canvas = document.getElementById(canvasId); if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    if (!data || !data.labels || data.labels.length === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No operational data for this period.', canvas.width / 2, canvas.height / 2); return null;
+    }
+    const { labels, bar_data, line_data } = data;
+    const treated_data = line_data;
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Incoming Solid', data: bar_data.solid, backgroundColor: '#635d9e', stack: 'Incoming', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v) => v > 1000 ? (v / 1000).toFixed(1) + 'k' : (v > 0 ? v.toFixed(0) : '') } },
+                { label: 'Incoming Liquid', data: bar_data.liquid, backgroundColor: '#54c0e8', stack: 'Incoming', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v) => v > 1000 ? (v / 1000).toFixed(1) + 'k' : (v > 0 ? v.toFixed(0) : '') } },
+                { label: 'Total Treated', data: treated_data, backgroundColor: '#66a286', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v) => v > 1000 ? (v / 1000).toFixed(1) + 'k' : (v > 0 ? v.toFixed(0) : '') } }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: title, font: { size: 16, weight: '600' } },
+                legend: { position: 'bottom' },
+                tooltip: { mode: 'index', intersect: false, callbacks: { label: c => `${c.dataset.label || ''}: ${c.parsed.y.toLocaleString(undefined, {maximumFractionDigits: 0})} Tons` } }
+            },
+            scales: { x: { stacked: false, grid: { display: false } }, y: { stacked: false, beginAtZero: true, title: { display: true, text: 'Volume (Tons)' }, grid: { color: '#e2e8f0' } } }
+        }
+    });
+}
+
+function createFacilityComparisonChart(canvasId, data, title) {
+    const canvas = document.getElementById(canvasId); if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    if (!data || !data.labels || data.labels.length === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No facility data available.', canvas.width / 2, canvas.height / 2); return null;
+    }
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [
+                { label: 'Solid Waste (Tons)', data: data.datasets.solid, backgroundColor: '#635d9e' },
+                { label: 'Liquid Waste (Tons)', data: data.datasets.liquid, backgroundColor: '#54c0e8' },
+                { label: 'Total Treated (Tons)', data: data.datasets.treated, backgroundColor: '#66a286' }
+            ]
+        },
+        options: {
+            indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: title, font: { size: 16, weight: '600' } },
+                legend: { position: 'bottom' },
+                tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toLocaleString()} Tons` } },
+                datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 11 }, anchor: 'center', align: 'center', formatter: (v) => v > 0 ? v.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '' }
+            },
+            scales: { x: { beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Volume (Tons)' } }, y: { grid: { display: false } } }
+        }
+    });
+}
+
+function createLineChart(canvasId, data, title) {
+  const canvas = document.getElementById(canvasId); if (!canvas) return null;
+  const ctx = canvas.getContext('2d');
+  if (!data || Object.keys(data).length === 0) { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No recovery data.', canvas.width / 2, canvas.height / 2); return null; }
+  const locations = Object.keys(data).sort();
+  const details = [...new Set(Object.values(data).flatMap(Object.keys))];
+  const colors = ['#635d9e', '#66a286', '#54c0e8', '#5f84b5'];
+  const datasets = details.map((detail, i) => ({ 
+    label: detail, data: locations.map(loc => data[loc]?.[detail] || 0), borderColor: colors[i % colors.length], backgroundColor: colors[i % colors.length] + '20', tension: 0.4, fill: true, pointRadius: 5, pointHoverRadius: 7,
+    datalabels: { display: true, color: colors[i % colors.length], font: { weight: 'bold', size: 10 }, anchor: 'end', align: 'top', offset: 4, formatter: (v) => v > 0 ? v.toLocaleString() : '' }
+  }));
+  return new Chart(ctx, { type: 'line', data: { labels: locations, datasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: title, font: { size: 16, weight: '600' } }, legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } } } });
+}
+
+function createStackedBarChart(canvasId, data, title) {
+  const canvas = document.getElementById(canvasId); if (!canvas) return null;
+  const ctx = canvas.getContext('2d');
+  if (!data || Object.keys(data).length === 0) { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No utility data.', canvas.width / 2, canvas.height / 2); return null; }
+  const categories = Object.keys(data);
+  const locations = [...new Set(Object.values(data).flatMap(Object.keys))].sort();
+  const colors = ['#635d9e', '#66a286', '#54c0e8', '#5f84b5'];
+  const datasets = categories.map((cat, i) => ({ 
+    label: cat === 'DIESEL' ? 'Diesel (Liters)' : 'Portable Water (Liters)', data: locations.map(loc => data[cat]?.[loc] || 0), backgroundColor: colors[i % colors.length], borderRadius: 6,
+    datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, anchor: 'center', align: 'center', formatter: (v) => v > 1000 ? `${(v/1000).toFixed(0)}k` : (v > 0 ? v : '')}
+  }));
+  return new Chart(ctx, { type: 'bar', data: { labels: locations, datasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: title, font: { size: 16, weight: '600' } }, legend: { position: 'bottom' } }, scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Liters' } } } } });
+}
+
+function createSimpleLineChart(canvasId, data, title) {
+    const canvas = document.getElementById(canvasId); if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    if (!data || !data.labels || data.labels.length === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No solidification data.', canvas.width / 2, canvas.height / 2); return null;
+    }
+    return new Chart(ctx, { type: 'line', data: { labels: data.labels, datasets: [{ label: 'Ratio', data: data.data, borderColor: '#5f84b5', backgroundColor: '#5f84b520', tension: 0.4, fill: true, pointRadius: 6, pointHoverRadius: 8, pointBackgroundColor: '#5f84b5', pointBorderColor: '#fff', pointBorderWidth: 2, datalabels: { display: true, color: '#5f84b5', font: { weight: 'bold', size: 11 }, anchor: 'end', align: 'top', offset: 6, formatter: (v) => typeof v === 'number' ? v.toFixed(2) : '' } }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: title, font: { size: 16, weight: '600' } }, legend: { display: false } }, scales: { y: { beginAtZero: false, grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } } } });
+}
+
+function createSourceRecoveryChart(canvasId, data, title) {
+    const canvas = document.getElementById(canvasId); if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    if (!data || !data.labels || data.labels.length === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No recovery data available.', canvas.width / 2, canvas.height / 2); return null;
+    }
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [
+                { label: 'Recovered Oil (Tons)', data: data.datasets['Recovered Oil'], backgroundColor: '#66a286', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? v.toLocaleString() : '' } },
+                { label: 'Recovered Scrap (Tons)', data: data.datasets['Recovered Scrap'], backgroundColor: '#54c0e8', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? v.toLocaleString() : '' } }
+            ]
+        },
+        options: {
+            indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: title, font: { size: 16, weight: '600' } },
+                legend: { position: 'bottom' },
+                tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toLocaleString()} Tons` } },
+                datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, anchor: 'center', align: 'center', formatter: (v) => v > 0 ? v.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '' }
+            },
+            scales: { x: { beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Volume (Tons)' } }, y: { grid: { display: false } } }
+        }
+    });
+}
+
+function createTreatmentEfficiencyChart(canvasId, data, title) {
+    const canvas = document.getElementById(canvasId); if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    if (!data || !data.labels || data.labels.length === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No efficiency data available.', canvas.width / 2, canvas.height / 2); return null;
+    }
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [
+                { label: 'Incoming Waste (Tons)', data: data.incoming, backgroundColor: '#635d9e', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? (v / 1000).toFixed(0) + 'k' : '' } },
+                { label: 'Treatment Capacity (Tons)', data: data.treatment, backgroundColor: '#66a286', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? (v / 1000).toFixed(0) + 'k' : '' } }
+            ]
+        },
+        options: {
+            indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: title, font: { size: 16, weight: '600' } },
+                legend: { position: 'bottom' },
+                tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toLocaleString(undefined, {maximumFractionDigits: 0})} Tons` } },
+                datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, anchor: 'center', align: 'center', formatter: (v) => v > 0 ? (v / 1000).toFixed(0) + 'k' : '' }
+            },
+            scales: { x: { beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Volume (Tons)' } }, y: { grid: { display: false } } }
+        }
+    });
+}
+
+function createWaterConsumptionPie(canvasId, data, title) {
+    const canvas = document.getElementById(canvasId); if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    if (!data || !data.labels || data.labels.length === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No water data available.', canvas.width / 2, canvas.height / 2); return null;
+    }
+    
+    const colors = ['#54c0e8', '#66a286', '#635d9e', '#5f84b5'];
+    
+    return new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                data: data.data,
+                backgroundColor: colors.slice(0, data.labels.length),
+                borderColor: '#fff',
+                borderWidth: 2,
+                datalabels: { 
+                    color: '#fff', 
+                    font: { weight: 'bold', size: 12 }, 
+                    formatter: (value, ctx) => {
+                        const sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = Math.round((value / sum) * 100);
+                        return percentage + '%';
+                    }
+                }
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: title, font: { size: 16, weight: '600' } },
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                tooltip: { callbacks: { label: c => `${c.label}: ${(c.raw / 1000000).toFixed(2)} Million L` } }
+            }
+        }
+    });
+}
+
+// ** NEW CHART FUNCTION **
+function createObservationChart(canvasId, obsData) {
+    const canvas = document.getElementById(canvasId); if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    const totalsEl = document.getElementById('observationTotals');
+
+    if (!obsData || !obsData.labels || obsData.labels.length === 0) { 
+        ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No observation data.', canvas.width / 2, canvas.height / 2); 
+        if (totalsEl) totalsEl.innerHTML = '';
+        return null; 
+    }
+    
+    if (totalsEl) totalsEl.innerHTML = `<span style="color: #635d9e;">Total Open: ${obsData.totals.open}</span> | <span style="color: #66a286;">Total Closed: ${obsData.totals.closed}</span>`;
+
+    const datasets = [
+        // --- Open Observations ---
+        { label: 'High - Open', data: obsData.datasets['High (Critical)_Open'], backgroundColor: '#635d9e', stack: 'Open' },
+        { label: 'Medium - Open', data: obsData.datasets['Medium_Open'], backgroundColor: '#66a286', stack: 'Open' },
+        { label: 'Low - Open', data: obsData.datasets['Low_Open'], backgroundColor: '#54c0e8', stack: 'Open' },
+        // --- Closed Observations ---
+        { label: 'High - Closed', data: obsData.datasets['High (Critical)_Closed'], backgroundColor: '#a5a1c7', stack: 'Closed' },
+        { label: 'Medium - Closed', data: obsData.datasets['Medium_Closed'], backgroundColor: '#a7c9b8', stack: 'Closed' },
+        { label: 'Low - Closed', data: obsData.datasets['Low_Closed'], backgroundColor: '#a2dcf3', stack: 'Closed' }
+    ].map(ds => ({ ...ds, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? v : '' } }));
+
+    return new Chart(ctx, { 
+        type: 'bar', 
+        data: { labels: obsData.labels, datasets }, 
+        options: { 
+            responsive: true, maintainAspectRatio: false,
+            plugins: { 
+                title: { display: false }, 
+                legend: { position: 'bottom' },
+                tooltip: { mode: 'index' }
+            }, 
+            scales: { 
+                x: { grid: { display: false } }, 
+                y: { stacked: true, beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Number of Observations' } } 
+            } 
+        } 
+    });
+}
+
+function buildTable(tableId, data) {
+  const table = document.getElementById(tableId); if (!table) return;
+  if (!data || data.length === 0) { table.innerHTML = '<tbody><tr><td colspan="100" style="text-align:center; padding: 2rem; color: #718096;">No environmental data.</td></tr></tbody>'; return; }
+  const grouped = {};
+  data.forEach(row => { if (!grouped[row.Parameter]) grouped[row.Parameter] = {}; grouped[row.Parameter][row.Location] = { current: row.Status }; });
+  const metrics = Object.keys(grouped).sort();
+  const locations = Array.from(new Set(data.map(d => d.Location))).sort();
+  function getStatusClass(v) { const val = String(v).toLowerCase().trim(); if (['pass'].some(s => val.includes(s))) return 'pass'; if (['warning', 'caution', 'within'].some(s => val.includes(s))) return 'warning'; if (['fail', 'exceeding', 'exceeded', 'non-compliant'].some(s => val.includes(s))) return 'fail'; return 'info'; }
+  function formatCellContent(v) { if (v === null || v === undefined) return '<span class="status-badge status-na">N/A</span>'; const className = getStatusClass(v); const displayValue = v.length > 30 ? v.substring(0, 27) + '...' : v; return `<span class="status-badge status-${className}" title="${v}">${displayValue}</span>`; }
+  const getMetricIcon = (n) => ({ 'ground water': '💧', 'air': '💨', 'soil': '🌱', 'noise': '🔊' }[n.toLowerCase()] || '📋');
+  let headerRow = '<thead><tr><th>Environmental Parameter</th>';
+  locations.forEach(loc => { headerRow += `<th>${loc}</th>`; });
+  headerRow += '</tr></thead>';
+  let bodyRows = '<tbody>';
+  metrics.forEach(metric => {
+    bodyRows += `<tr><td><span style="margin-right:0.5rem;">${getMetricIcon(metric)}</span>${metric}</td>`;
+    locations.forEach(loc => {
+      const entry = grouped[metric]?.[loc];
+      const statusClass = entry ? `status-cell-${getStatusClass(entry.current)}` : '';
+      bodyRows += `<td class="${statusClass}" style="text-align: center;">${entry ? formatCellContent(entry.current) : '<span class="status-badge status-na">N/A</span>'}</td>`;
+    });
+    bodyRows += '</tr>';
+  });
+  table.innerHTML = headerRow + bodyRows + '</tbody>';
+}
+
+function renderWasteHierarchy(data) {
+  const container = document.getElementById('hierarchy-flow'); if (!container) return;
+  if (!data || !data.values || data.values.reduce((a, b) => a + b, 0) === 0) { container.innerHTML = `<div style="text-align:center; padding: 2rem; color:#718096;">No hierarchy data.</div>`; return; }
+  const { labels, values, percentages } = data;
+  const icons = ['🔄', '♻️', '🔧', '🗑️'];
+  container.innerHTML = labels.map((label, i) => `
+    <div class="flow-item">
+      <div class="flow-item-icon">${icons[i]}</div>
+      <div class="flow-item-content">
+        <div class="flow-item-label">
+          <span>${label}</span>
+          <span>${values[i].toLocaleString(undefined, {maximumFractionDigits: 0})} T (${percentages[i]}%)</span>
+        </div>
+        <div class="flow-bar-container"><div class="flow-bar" style="width: ${percentages[i]}%;"></div></div>
+      </div>
+    </div>`).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadDashboardData();
+  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+});
+</script>
+</body>
+</html>
