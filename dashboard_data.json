@@ -1392,6 +1392,704 @@
   "Location": "JIWRC",
   "Value": 18823
  }
+ [
+    {
+        "Date": "Oct-25",
+        "Category": "INCOMING WASTE",
+        "Detail": "Solid",
+        "Location": "YIWRC",
+        "Value": 5085
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "INCOMING WASTE",
+        "Detail": "Solid",
+        "Location": "AI JOHFA",
+        "Value": 6729
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "INCOMING WASTE",
+        "Detail": "Solid",
+        "Location": "DIWMC",
+        "Value": 2752.19
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "INCOMING WASTE",
+        "Detail": "Solid",
+        "Location": "JIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "INCOMING WASTE",
+        "Detail": "Liquid",
+        "Location": "YIWRC",
+        "Value": 6185
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "INCOMING WASTE",
+        "Detail": "Liquid",
+        "Location": "AI JOHFA",
+        "Value": 8384
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "INCOMING WASTE",
+        "Detail": "Liquid",
+        "Location": "DIWMC",
+        "Value": 27384.95
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "INCOMING WASTE",
+        "Detail": "Liquid",
+        "Location": "JIWRC",
+        "Value": 16776
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "TREATMENT",
+        "Detail": "Solid",
+        "Location": "YIWRC",
+        "Value": 19611
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "TREATMENT",
+        "Detail": "Solid",
+        "Location": "AI JOHFA",
+        "Value": 6729
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "TREATMENT",
+        "Detail": "Solid",
+        "Location": "DIWMC",
+        "Value": 2752.19
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "TREATMENT",
+        "Detail": "Solid",
+        "Location": "JIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "TREATMENT",
+        "Detail": "Liquid",
+        "Location": "YIWRC",
+        "Value": 2946
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "TREATMENT",
+        "Detail": "Liquid",
+        "Location": "AI JOHFA",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "TREATMENT",
+        "Detail": "Liquid",
+        "Location": "DIWMC",
+        "Value": 27384.95
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "TREATMENT",
+        "Detail": "Liquid",
+        "Location": "JIWRC",
+        "Value": 15442
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "BACKLOG",
+        "Detail": "Solid",
+        "Location": "YIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "BACKLOG",
+        "Detail": "Solid",
+        "Location": "AI JOHFA",
+        "Value": 134
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "BACKLOG",
+        "Detail": "Solid",
+        "Location": "DIWMC",
+        "Value": 4
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "BACKLOG",
+        "Detail": "Solid",
+        "Location": "JIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "BACKLOG",
+        "Detail": "Liquid",
+        "Location": "YIWRC",
+        "Value": 10263
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "BACKLOG",
+        "Detail": "Liquid",
+        "Location": "AI JOHFA",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "BACKLOG",
+        "Detail": "Liquid",
+        "Location": "DIWMC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "BACKLOG",
+        "Detail": "Liquid",
+        "Location": "JIWRC",
+        "Value": 13942
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "SOLIDIFICATION",
+        "Detail": "Reagent Ratio",
+        "Location": "YIWRC",
+        "Value": 0.6
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "SOLIDIFICATION",
+        "Detail": "Reagent Ratio",
+        "Location": "AI JOHFA",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "SOLIDIFICATION",
+        "Detail": "Reagent Ratio",
+        "Location": "DIWMC",
+        "Value": 0.9
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "SOLIDIFICATION",
+        "Detail": "Reagent Ratio",
+        "Location": "JIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "SOURCE RECOVERY",
+        "Detail": "Recovered Oil",
+        "Location": "YIWRC",
+        "Value": 377
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "SOURCE RECOVERY",
+        "Detail": "Recovered Oil",
+        "Location": "AI JOHFA",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "SOURCE RECOVERY",
+        "Detail": "Recovered Oil",
+        "Location": "DIWMC",
+        "Value": 341.64
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "SOURCE RECOVERY",
+        "Detail": "Recovered Oil",
+        "Location": "JIWRC",
+        "Value": 3058
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "SOURCE RECOVERY",
+        "Detail": "Recovered Scrap",
+        "Location": "YIWRC",
+        "Value": 428.62
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "SOURCE RECOVERY",
+        "Detail": "Recovered Scrap",
+        "Location": "AI JOHFA",
+        "Value": 89
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "SOURCE RECOVERY",
+        "Detail": "Recovered Scrap",
+        "Location": "DIWMC",
+        "Value": 521
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "SOURCE RECOVERY",
+        "Detail": "Recovered Scrap",
+        "Location": "JIWRC",
+        "Value": 1361
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Ground Water",
+        "Location": "YIWRC",
+        "Value": "All 14 GW is excceeding in Salinity Vs baseline"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Ground Water",
+        "Location": "AI JOHFA",
+        "Value": "Pass"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Ground Water",
+        "Location": "DIWMC",
+        "Value": "Pass"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Ground Water",
+        "Location": "JIWRC",
+        "Value": "All Exceeding"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Noise",
+        "Location": "YIWRC",
+        "Value": "Pass"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Noise",
+        "Location": "AI JOHFA",
+        "Value": "Pass"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Noise",
+        "Location": "DIWMC",
+        "Value": "Pass"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Noise",
+        "Location": "JIWRC",
+        "Value": "PASS"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Air (3rd Party)",
+        "Location": "YIWRC",
+        "Value": "Benzene Exceeding in Station -2,3,7,9"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Air (3rd Party)",
+        "Location": "AI JOHFA",
+        "Value": "Pass"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Air (3rd Party)",
+        "Location": "DIWMC",
+        "Value": "Pass"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Air (3rd Party)",
+        "Location": "JIWRC",
+        "Value": "PASS"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Air (Internal)",
+        "Location": "YIWRC",
+        "Value": "205 Hrs (MNHC), 125 Hrs Benzen, 1 Hrs (H2S)"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Air (Internal)",
+        "Location": "AI JOHFA",
+        "Value": "N/A"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Air (Internal)",
+        "Location": "DIWMC",
+        "Value": "N/A"
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "ENVIRONMENTAL MONITORING",
+        "Detail": "Air (Internal)",
+        "Location": "JIWRC",
+        "Value": ""
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "DIESEL",
+        "Detail": "Liter",
+        "Location": "YIWRC",
+        "Value": 66740
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "DIESEL",
+        "Detail": "Liter",
+        "Location": "AI JOHFA",
+        "Value": 42000
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "DIESEL",
+        "Detail": "Liter",
+        "Location": "DIWMC",
+        "Value": 95616
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "DIESEL",
+        "Detail": "Liter",
+        "Location": "JIWRC",
+        "Value": 89180
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "PORTABLE WATER",
+        "Detail": "Liter",
+        "Location": "YIWRC",
+        "Value": 159401
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "PORTABLE WATER",
+        "Detail": "Liter",
+        "Location": "AI JOHFA",
+        "Value": 930000
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "PORTABLE WATER",
+        "Detail": "Liter",
+        "Location": "DIWMC",
+        "Value": 4887487
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "PORTABLE WATER",
+        "Detail": "Liter",
+        "Location": "JIWRC",
+        "Value": 2273000
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "High (Critical)",
+        "Status": "Open",
+        "Location": "YIWRC",
+        "Value": 24
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "High (Critical)",
+        "Status": "Closed",
+        "Location": "YIWRC",
+        "Value": 20
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "High (Critical)",
+        "Status": "Open",
+        "Location": "AI JOHFA",
+        "Value": 10
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "High (Critical)",
+        "Status": "Closed",
+        "Location": "AI JOHFA",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "High (Critical)",
+        "Status": "Open",
+        "Location": "DIWMC",
+        "Value": 13
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "High (Critical)",
+        "Status": "Closed",
+        "Location": "DIWMC",
+        "Value": 4
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "High (Critical)",
+        "Status": "Open",
+        "Location": "JIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "High (Critical)",
+        "Status": "Closed",
+        "Location": "JIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Medium",
+        "Status": "Open",
+        "Location": "YIWRC",
+        "Value": 5
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Medium",
+        "Status": "Closed",
+        "Location": "YIWRC",
+        "Value": 5
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Medium",
+        "Status": "Open",
+        "Location": "AI JOHFA",
+        "Value": 2
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Medium",
+        "Status": "Closed",
+        "Location": "AI JOHFA",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Medium",
+        "Status": "Open",
+        "Location": "DIWMC",
+        "Value": 1
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Medium",
+        "Status": "Closed",
+        "Location": "DIWMC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Medium",
+        "Status": "Open",
+        "Location": "JIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Medium",
+        "Status": "Closed",
+        "Location": "JIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Low",
+        "Status": "Open",
+        "Location": "YIWRC",
+        "Value": 3
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Low",
+        "Status": "Closed",
+        "Location": "YIWRC",
+        "Value": 3
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Low",
+        "Status": "Open",
+        "Location": "AI JOHFA",
+        "Value": 1
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Low",
+        "Status": "Closed",
+        "Location": "AI JOHFA",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Low",
+        "Status": "Open",
+        "Location": "DIWMC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Low",
+        "Status": "Closed",
+        "Location": "DIWMC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Low",
+        "Status": "Open",
+        "Location": "JIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "OBSERVATION",
+        "Detail": "Low",
+        "Status": "Closed",
+        "Location": "JIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "REUSE",
+        "Detail": "Solid",
+        "Location": "YIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "REUSE",
+        "Detail": "Liquid",
+        "Location": "YIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "REUSE",
+        "Detail": "Solid",
+        "Location": "AI JOHFA",
+        "Value": 6020
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "REUSE",
+        "Detail": "Liquid",
+        "Location": "AI JOHFA",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "REUSE",
+        "Detail": "Solid",
+        "Location": "DIWMC",
+        "Value": 4283.66
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "REUSE",
+        "Detail": "Liquid",
+        "Location": "DIWMC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "REUSE",
+        "Detail": "Solid",
+        "Location": "JIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "REUSE",
+        "Detail": "Liquid",
+        "Location": "JIWRC",
+        "Value": 0
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "RECYCLE",
+        "Detail": "All",
+        "Location": "YIWRC",
+        "Value": 48.25
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "RECYCLE",
+        "Detail": "All",
+        "Location": "AI JOHFA",
+        "Value": 130
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "RECYCLE",
+        "Detail": "All",
+        "Location": "DIWMC",
+        "Value": 931.51
+    },
+    {
+        "Date": "Oct-25",
+        "Category": "RECYCLE",
+        "Detail": "All",
+        "Location": "JIWRC",
+        "Value": 15442
+    }
+
 ],
 "Sheet1":[]
 }
