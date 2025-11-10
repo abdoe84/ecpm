@@ -101,11 +101,11 @@ footer { text-align: center; padding: 2rem; color: var(--text-secondary); font-s
 .status-cell-info { background-color: #f1f5f9; border-left: 4px solid #64748b; }
 .table-section tbody tr:hover .status-cell-pass, .table-section tbody tr:hover .status-cell-warning, .table-section tbody tr:hover .status-cell-fail, .table-section tbody tr:hover .status-cell-info { background-color: #f8fafc; border-left-width: 6px; }
 .tiny-icon {
-  width: 40px;          /* حجم صغير جدًا مثل الأيقونة */
+  width: 40px;
   height: 40px;
-  vertical-align: middle; /* لتكون بمحاذاة النص */
-  margin-right: 6px;      /* مسافة بسيطة بين الأيقونة والعنوان */
-  opacity: 0.9;           /* شفافية خفيفة (اختياري لتبدو ناعمة) */
+  vertical-align: middle;
+  margin-right: 6px;
+  opacity: 0.9;
 }
 
 </style>
@@ -499,7 +499,7 @@ function processSourceRecovery(rows, locations) {
   };
 }
 
-// MODIFIED: Updated to process solid, liquid, and total values
+// MODIFIED: Updated to show solid, liquid, and total solid + liquid
 function processTreatmentEfficiency(rows, locations) {
   const data = {};
   const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
@@ -507,9 +507,7 @@ function processTreatmentEfficiency(rows, locations) {
   relevantLocations.forEach(loc => {
     data[loc] = { 
       solid_incoming: 0, 
-      liquid_incoming: 0, 
-      total_incoming: 0,
-      treatment: 0 
+      liquid_incoming: 0
     };
   });
 
@@ -520,27 +518,21 @@ function processTreatmentEfficiency(rows, locations) {
       if (row.Category === 'INCOMING WASTE') {
         if (row.Detail.toLowerCase() === 'solid') {
           data[loc].solid_incoming += value;
-          data[loc].total_incoming += value;
         } else if (row.Detail.toLowerCase() === 'liquid') {
           data[loc].liquid_incoming += value;
-          data[loc].total_incoming += value;
         }
-      } else if (row.Category === 'TREATMENT') {
-        data[loc].treatment += value;
       }
     }
   });
 
   const filteredLocations = relevantLocations.filter(loc => 
-    data[loc].solid_incoming > 0 || data[loc].liquid_incoming > 0 || data[loc].treatment > 0
+    data[loc].solid_incoming > 0 || data[loc].liquid_incoming > 0
   ).sort();
 
   return {
     labels: filteredLocations,
     solid_incoming: filteredLocations.map(loc => data[loc].solid_incoming),
-    liquid_incoming: filteredLocations.map(loc => data[loc].liquid_incoming),
-    total_incoming: filteredLocations.map(loc => data[loc].total_incoming),
-    treatment: filteredLocations.map(loc => data[loc].treatment)
+    liquid_incoming: filteredLocations.map(loc => data[loc].liquid_incoming)
   };
 }
 
@@ -608,7 +600,7 @@ function renderCharts(charts) {
   chartInstances.utility = createStackedBarChart('utilityChart', charts.utility_consumption, 'Utility Consumption');
   chartInstances.solidification = createSimpleLineChart('solidificationChart', charts.solidification_ratio, 'Solidification Ratio');
   chartInstances.sourceRecovery = createSourceRecoveryChart('sourceRecoveryChart', charts.source_recovery, '📊 Source Recovery by Location');
-  chartInstances.treatmentEfficiency = createTreatmentEfficiencyChart('treatmentEfficiencyChart', charts.treatment_efficiency, '📊 Treatment Efficiency (Incoming vs Capacity)');
+  chartInstances.treatmentEfficiency = createTreatmentEfficiencyChart('treatmentEfficiencyChart', charts.treatment_efficiency, '📊 Treatment Efficiency ');
   chartInstances.waterConsumption = createWaterConsumptionPie('waterConsumptionChart', charts.water_consumption, '💧 Water Consumption by Location');
   chartInstances.observation = createObservationChart('observationChart', charts.observation_status);
   buildTable('environmentTable', charts.environmental_monitoring);
@@ -740,13 +732,17 @@ function createSourceRecoveryChart(canvasId, data, title) {
     });
 }
 
-// MODIFIED: Updated to show solid, liquid, and total values
+// MODIFIED: Updated to show solid, liquid, and total solid + liquid
 function createTreatmentEfficiencyChart(canvasId, data, title) {
     const canvas = document.getElementById(canvasId); if (!canvas) return null;
     const ctx = canvas.getContext('2d');
     if (!data || !data.labels || data.labels.length === 0) {
         ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No efficiency data available.', canvas.width / 2, canvas.height / 2); return null;
     }
+    
+    // Calculate total solid + liquid for each location
+    const totalSolidLiquid = data.solid_incoming.map((solid, i) => solid + data.liquid_incoming[i]);
+    
     return new Chart(ctx, {
         type: 'bar',
         data: {
@@ -754,8 +750,7 @@ function createTreatmentEfficiencyChart(canvasId, data, title) {
             datasets: [
                 { label: 'Solid Incoming (Tons)', data: data.solid_incoming, backgroundColor: '#635d9e', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? (v / 1000).toFixed(0) + 'k' : '' } },
                 { label: 'Liquid Incoming (Tons)', data: data.liquid_incoming, backgroundColor: '#54c0e8', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? (v / 1000).toFixed(0) + 'k' : '' } },
-                { label: 'Total Incoming (Tons)', data: data.total_incoming, backgroundColor: '#5f84b5', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? (v / 1000).toFixed(0) + 'k' : '' } },
-                { label: 'Treatment Capacity (Tons)', data: data.treatment, backgroundColor: '#66a286', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? (v / 1000).toFixed(0) + 'k' : '' } }
+                { label: 'Total Solid + Liquid (Tons)', data: totalSolidLiquid, backgroundColor: '#66a286', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? (v / 1000).toFixed(0) + 'k' : '' } }
             ]
         },
         options: {
