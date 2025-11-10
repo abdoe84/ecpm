@@ -627,9 +627,9 @@ function createComboChart(canvasId, data, title) {
         data: {
             labels: labels,
             datasets: [
-                { label: 'Incoming Solid', data: bar_data.solid, backgroundColor: '#635d9e', stack: 'Incoming', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v) => v > 1000 ? (v / 1000).toFixed(1) + 'k' : (v > 0 ? v.toFixed(0) : '') } },
-                { label: 'Incoming Liquid', data: bar_data.liquid, backgroundColor: '#54c0e8', stack: 'Incoming', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v) => v > 1000 ? (v / 1000).toFixed(1) + 'k' : (v > 0 ? v.toFixed(0) : '') } },
-                { label: 'Total Treated', data: treated_data, backgroundColor: '#66a286', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v) => v > 1000 ? (v / 1000).toFixed(1) + 'k' : (v > 0 ? v.toFixed(0) : '') } }
+                { label: 'Incoming Solid', data: bar_data.solid, backgroundColor: '#635d9e', stack: 'Incoming', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: (v) => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
+                { label: 'Incoming Liquid', data: bar_data.liquid, backgroundColor: '#54c0e8', stack: 'Incoming', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: (v) => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
+                { label: 'Total Treated', data: treated_data, backgroundColor: '#66a286', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: (v) => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
             ]
         },
         options: {
@@ -637,6 +637,7 @@ function createComboChart(canvasId, data, title) {
             plugins: {
                 title: { display: true, text: title, font: { size: 16, weight: '600' } },
                 legend: { position: 'bottom' },
+                datalabels: { display: true },
                 tooltip: { mode: 'index', intersect: false, callbacks: { label: c => `${c.dataset.label || ''}: ${c.parsed.y.toLocaleString(undefined, {maximumFractionDigits: 0})} Tons` } }
             },
             scales: { x: { stacked: false, grid: { display: false } }, y: { stacked: false, beginAtZero: true, title: { display: true, text: 'Volume (Tons)' }, grid: { color: '#e2e8f0' } } }
@@ -655,9 +656,8 @@ function createFacilityComparisonChart(canvasId, data, title) {
         data: {
             labels: data.labels,
             datasets: [
-                { label: 'Solid Waste (Tons)', data: data.datasets.solid, backgroundColor: '#635d9e' },
-                { label: 'Liquid Waste (Tons)', data: data.datasets.liquid, backgroundColor: '#54c0e8' }
-                // Removed Total Treated dataset
+                { label: 'Solid Waste (Tons)', data: data.datasets.solid, backgroundColor: '#635d9e', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
+                { label: 'Liquid Waste (Tons)', data: data.datasets.liquid, backgroundColor: '#54c0e8', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
             ]
         },
         options: {
@@ -665,8 +665,8 @@ function createFacilityComparisonChart(canvasId, data, title) {
             plugins: {
                 title: { display: true, text: title, font: { size: 16, weight: '600' } },
                 legend: { position: 'bottom' },
-                tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toLocaleString()} Tons` } },
-                datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 11 }, anchor: 'center', align: 'center', formatter: (v) => v > 0 ? v.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '' }
+                datalabels: { display: true },
+                tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toLocaleString()} Tons` } }
             },
             scales: { x: { beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Volume (Tons)' } }, y: { grid: { display: false } } }
         }
@@ -684,7 +684,20 @@ function createLineChart(canvasId, data, title) {
     label: detail, data: locations.map(loc => data[loc]?.[detail] || 0), borderColor: colors[i % colors.length], backgroundColor: colors[i % colors.length] + '20', tension: 0.4, fill: true, pointRadius: 5, pointHoverRadius: 7,
     datalabels: { display: true, color: colors[i % colors.length], font: { weight: 'bold', size: 10 }, anchor: 'end', align: 'top', offset: 4, formatter: (v) => v > 0 ? v.toLocaleString() : '' }
   }));
-  return new Chart(ctx, { type: 'line', data: { labels: locations, datasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: title, font: { size: 16, weight: '600' } }, legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } } } });
+  return new Chart(ctx, { 
+    type: 'line', 
+    data: { labels: locations, datasets }, 
+    options: { 
+      responsive: true, 
+      maintainAspectRatio: false, 
+      plugins: { 
+        title: { display: true, text: title, font: { size: 16, weight: '600' } }, 
+        legend: { position: 'bottom' },
+        datalabels: { display: true }
+      }, 
+      scales: { y: { beginAtZero: true, grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } } 
+    } 
+  });
 }
 
 function createStackedBarChart(canvasId, data, title) {
@@ -695,10 +708,26 @@ function createStackedBarChart(canvasId, data, title) {
   const locations = [...new Set(Object.values(data).flatMap(Object.keys))].sort();
   const colors = ['#635d9e', '#66a286', '#54c0e8', '#5f84b5'];
   const datasets = categories.map((cat, i) => ({ 
-    label: cat === 'DIESEL' ? 'Diesel (Liters)' : 'Portable Water (Liters)', data: locations.map(loc => data[cat]?.[loc] || 0), backgroundColor: colors[i % colors.length], borderRadius: 6,
-    datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, anchor: 'center', align: 'center', formatter: (v) => v > 1000 ? `${(v/1000).toFixed(0)}k` : (v > 0 ? v : '')}
+    label: cat === 'DIESEL' ? 'Diesel (Liters)' : 'Portable Water (Liters)', 
+    data: locations.map(loc => data[cat]?.[loc] || 0), 
+    backgroundColor: colors[i % colors.length], 
+    borderRadius: 6,
+    datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, anchor: 'center', align: 'center', formatter: (v) => v > 0 ? (v > 1000000 ? (v / 1000000).toFixed(1) + 'M' : v > 1000 ? (v / 1000).toFixed(0) + 'k' : v) : '' }
   }));
-  return new Chart(ctx, { type: 'bar', data: { labels: locations, datasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: title, font: { size: 16, weight: '600' } }, legend: { position: 'bottom' } }, scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Liters' } } } } });
+  return new Chart(ctx, { 
+    type: 'bar', 
+    data: { labels: locations, datasets }, 
+    options: { 
+      responsive: true, 
+      maintainAspectRatio: false, 
+      plugins: { 
+        title: { display: true, text: title, font: { size: 16, weight: '600' } }, 
+        legend: { position: 'bottom' },
+        datalabels: { display: true }
+      }, 
+      scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Liters' } } } 
+    } 
+  });
 }
 
 function createSimpleLineChart(canvasId, data, title) {
@@ -707,7 +736,58 @@ function createSimpleLineChart(canvasId, data, title) {
     if (!data || !data.labels || data.labels.length === 0) {
         ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No solidification data.', canvas.width / 2, canvas.height / 2); return null;
     }
-    return new Chart(ctx, { type: 'line', data: { labels: data.labels, datasets: [{ label: 'Ratio', data: data.data, borderColor: '#5f84b5', backgroundColor: '#5f84b520', tension: 0.4, fill: true, pointRadius: 6, pointHoverRadius: 8, pointBackgroundColor: '#5f84b5', pointBorderColor: '#fff', pointBorderWidth: 2, datalabels: { display: true, color: '#5f84b5', font: { weight: 'bold', size: 11 }, anchor: 'end', align: 'top', offset: 6, formatter: (v) => typeof v === 'number' ? v.toFixed(2) : '' } }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: title, font: { size: 16, weight: '600' } }, legend: { display: false } }, scales: { y: { beginAtZero: false, grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } } } });
+    
+    // Create target line data (1.0 for all points)
+    const targetLineData = data.labels.map(() => 1.0);
+    
+    return new Chart(ctx, { 
+        type: 'line', 
+        data: { 
+            labels: data.labels, 
+            datasets: [
+                {
+                    label: 'Ratio', 
+                    data: data.data, 
+                    borderColor: '#5f84b5', 
+                    backgroundColor: '#5f84b520', 
+                    tension: 0.4, 
+                    fill: true, 
+                    pointRadius: 6, 
+                    pointHoverRadius: 8, 
+                    pointBackgroundColor: '#5f84b5', 
+                    pointBorderColor: '#fff', 
+                    pointBorderWidth: 2, 
+                    datalabels: { display: true, color: '#5f84b5', font: { weight: 'bold', size: 11 }, anchor: 'end', align: 'top', offset: 6, formatter: (v) => typeof v === 'number' ? v.toFixed(2) : '' } 
+                },
+                {
+                    label: 'Target (1.0)', 
+                    data: targetLineData, 
+                    borderColor: '#ef4444', 
+                    backgroundColor: 'transparent',
+                    borderDash: [5, 5],
+                    borderWidth: 2,
+                    tension: 0, 
+                    fill: false, 
+                    pointRadius: 0, 
+                    pointHoverRadius: 0,
+                    datalabels: { display: false }
+                }
+            ] 
+        }, 
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { 
+                title: { display: true, text: title, font: { size: 16, weight: '600' } }, 
+                legend: { position: 'bottom' },
+                datalabels: { display: true }
+            }, 
+            scales: { 
+                y: { beginAtZero: false, grid: { color: '#e2e8f0' } }, 
+                x: { grid: { display: false } } 
+            } 
+        } 
+    });
 }
 
 // MODIFIED: Updated to show solid, liquid, and total solid + liquid
@@ -726,9 +806,9 @@ function createTreatmentEfficiencyChart(canvasId, data, title) {
         data: {
             labels: data.labels,
             datasets: [
-                { label: 'Solid Incoming (Tons)', data: data.solid_incoming, backgroundColor: '#635d9e', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? (v / 1000).toFixed(0) + 'k' : '' } },
-                { label: 'Liquid Incoming (Tons)', data: data.liquid_incoming, backgroundColor: '#54c0e8', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? (v / 1000).toFixed(0) + 'k' : '' } },
-                { label: 'Total Solid + Liquid (Tons)', data: totalSolidLiquid, backgroundColor: '#66a286', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? (v / 1000).toFixed(0) + 'k' : '' } }
+                { label: 'Solid Incoming (Tons)', data: data.solid_incoming, backgroundColor: '#635d9e', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
+                { label: 'Liquid Incoming (Tons)', data: data.liquid_incoming, backgroundColor: '#54c0e8', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
+                { label: 'Total Solid + Liquid (Tons)', data: totalSolidLiquid, backgroundColor: '#66a286', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
             ]
         },
         options: {
@@ -736,8 +816,8 @@ function createTreatmentEfficiencyChart(canvasId, data, title) {
             plugins: {
                 title: { display: true, text: title, font: { size: 16, weight: '600' } },
                 legend: { position: 'bottom' },
-                tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toLocaleString(undefined, {maximumFractionDigits: 0})} Tons` } },
-                datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, anchor: 'center', align: 'center', formatter: (v) => v > 0 ? (v / 1000).toFixed(0) + 'k' : '' }
+                datalabels: { display: true },
+                tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toLocaleString(undefined, {maximumFractionDigits: 0})} Tons` } }
             },
             scales: { x: { beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Volume (Tons)' } }, y: { grid: { display: false } } }
         }
@@ -763,6 +843,7 @@ function createWaterConsumptionPie(canvasId, data, title) {
                 borderColor: '#fff',
                 borderWidth: 2,
                 datalabels: { 
+                    display: true,
                     color: '#fff', 
                     font: { weight: 'bold', size: 12 }, 
                     formatter: (value, ctx) => {
@@ -778,6 +859,7 @@ function createWaterConsumptionPie(canvasId, data, title) {
             plugins: {
                 title: { display: true, text: title, font: { size: 16, weight: '600' } },
                 legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                datalabels: { display: true },
                 tooltip: { callbacks: { label: c => `${c.label}: ${(c.raw / 1000000).toFixed(2)} Million L` } }
             }
         }
@@ -795,8 +877,8 @@ function createBacklogChart(canvasId, data, title) {
         data: {
             labels: data.labels,
             datasets: [
-                { label: 'Solid Backlog (Tons)', data: data.solid, backgroundColor: '#635d9e', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
-                { label: 'Liquid Backlog (Tons)', data: data.liquid, backgroundColor: '#54c0e8', datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
+                { label: 'Solid Backlog (Tons)', data: data.solid, backgroundColor: '#635d9e', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
+                { label: 'Liquid Backlog (Tons)', data: data.liquid, backgroundColor: '#54c0e8', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
             ]
         },
         options: {
@@ -804,8 +886,8 @@ function createBacklogChart(canvasId, data, title) {
             plugins: {
                 title: { display: true, text: title, font: { size: 16, weight: '600' } },
                 legend: { position: 'bottom' },
-                tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toLocaleString(undefined, {maximumFractionDigits: 0})} Tons` } },
-                datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, anchor: 'center', align: 'center', formatter: (v) => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' }
+                datalabels: { display: true },
+                tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toLocaleString(undefined, {maximumFractionDigits: 0})} Tons` } }
             },
             scales: { x: { beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Volume (Tons)' } }, y: { grid: { display: false } } }
         }
@@ -827,14 +909,14 @@ function createObservationChart(canvasId, obsData) {
 
     const datasets = [
         // --- Open Observations ---
-        { label: 'High - Open', data: obsData.datasets['High (Critical)_Open'], backgroundColor: '#635d9e', stack: 'Open' },
-        { label: 'Medium - Open', data: obsData.datasets['Medium_Open'], backgroundColor: '#66a286', stack: 'Open' },
-        { label: 'Low - Open', data: obsData.datasets['Low_Open'], backgroundColor: '#54c0e8', stack: 'Open' },
+        { label: 'High - Open', data: obsData.datasets['High (Critical)_Open'], backgroundColor: '#635d9e', stack: 'Open', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? v : '' } },
+        { label: 'Medium - Open', data: obsData.datasets['Medium_Open'], backgroundColor: '#66a286', stack: 'Open', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? v : '' } },
+        { label: 'Low - Open', data: obsData.datasets['Low_Open'], backgroundColor: '#54c0e8', stack: 'Open', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? v : '' } },
         // --- Closed Observations ---
-        { label: 'High - Closed', data: obsData.datasets['High (Critical)_Closed'], backgroundColor: '#a5a1c7', stack: 'Closed' },
-        { label: 'Medium - Closed', data: obsData.datasets['Medium_Closed'], backgroundColor: '#a7c9b8', stack: 'Closed' },
-        { label: 'Low - Closed', data: obsData.datasets['Low_Closed'], backgroundColor: '#a2dcf3', stack: 'Closed' }
-    ].map(ds => ({ ...ds, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: v => v > 0 ? v : '' } }));
+        { label: 'High - Closed', data: obsData.datasets['High (Critical)_Closed'], backgroundColor: '#a5a1c7', stack: 'Closed', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? v : '' } },
+        { label: 'Medium - Closed', data: obsData.datasets['Medium_Closed'], backgroundColor: '#a7c9b8', stack: 'Closed', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? v : '' } },
+        { label: 'Low - Closed', data: obsData.datasets['Low_Closed'], backgroundColor: '#a2dcf3', stack: 'Closed', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? v : '' } }
+    ];
 
     return new Chart(ctx, { 
         type: 'bar', 
@@ -844,6 +926,7 @@ function createObservationChart(canvasId, obsData) {
             plugins: { 
                 title: { display: false }, 
                 legend: { position: 'bottom' },
+                datalabels: { display: true },
                 tooltip: { mode: 'index' }
             }, 
             scales: { 
