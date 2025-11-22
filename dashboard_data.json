@@ -107,6 +107,62 @@
     },
     {
       "Date": "Aug-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Pond",
+      "Location": "YIWRC",
+      "Value": 3294.85
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Pond",
+      "Location": "AI JOHFA",
+      "Value": 6383
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Pond",
+      "Location": "DIWMC",
+      "Value": 12081
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Pond",
+      "Location": "JIWRC",
+      "Value": 0
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Landfill",
+      "Location": "YIWRC",
+      "Value": 16810.6
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Landfill",
+      "Location": "AI JOHFA",
+      "Value": 3934
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Landfill",
+      "Location": "DIWMC",
+      "Value": 19141
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Landfill",
+      "Location": "JIWRC",
+      "Value": 1400
+    },
+    {
+      "Date": "Aug-25",
       "Category": "DIESEL",
       "Detail": "Liter",
       "Location": "YIWRC",
@@ -380,6 +436,62 @@
       "Detail": "Liquid",
       "Location": "JIWRC",
       "Value": 18121
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Pond",
+      "Location": "YIWRC",
+      "Value": 6484.28
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Pond",
+      "Location": "AI JOHFA",
+      "Value": 6541
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Pond",
+      "Location": "DIWMC",
+      "Value": 11512
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Pond",
+      "Location": "JIWRC",
+      "Value": 15000
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Landfill",
+      "Location": "YIWRC",
+      "Value": 20332.43
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Landfill",
+      "Location": "AI JOHFA",
+      "Value": 6112
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Landfill",
+      "Location": "DIWMC",
+      "Value": 14048.36
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Landfill",
+      "Location": "JIWRC",
+      "Value": 1395
     },
     {
       "Date": "Sep-25",
@@ -779,28 +891,28 @@
     {
       "Date": "Aug-25",
       "Category": "ENVIRONMENTAL MONITORING",
-      "Detail": "Air (Internal)",
+      "Detail": "FAA internal",
       "Location": "YIWRC",
       "Value": "40 Hrs (H2S), 38 Hrs (Benzene)"
     },
     {
       "Date": "Aug-25",
       "Category": "ENVIRONMENTAL MONITORING",
-      "Detail": "Air (Internal)",
+      "Detail": "FAA internal",
       "Location": "AI JOHFA",
       "Value": "N/A"
     },
     {
       "Date": "Aug-25",
       "Category": "ENVIRONMENTAL MONITORING",
-      "Detail": "Air (Internal)",
+      "Detail": "FAA internal",
       "Location": "DIWMC",
       "Value": "N/A"
     },
     {
       "Date": "Aug-25",
       "Category": "ENVIRONMENTAL MONITORING",
-      "Detail": "Air (Internal)",
+      "Detail": "FAA internal",
       "Location": "JIWRC",
       "Value": "121Hrs(NMHC), 16 Hrs(H2S), 270Hrs(Benzene)"
     },
@@ -1199,28 +1311,28 @@
     {
       "Date": "Sep-25",
       "Category": "ENVIRONMENTAL MONITORING",
-      "Detail": "Air (Internal)",
+      "Detail": "FAA internal",
       "Location": "YIWRC",
       "Value": "205 Hrs (MNHC), 125 Hrs Benzen, 1 Hrs (H2S)"
     },
     {
       "Date": "Sep-25",
       "Category": "ENVIRONMENTAL MONITORING",
-      "Detail": "Air (Internal)",
+      "Detail": "FAA internal",
       "Location": "AI JOHFA",
       "Value": "Pass"
     },
     {
       "Date": "Sep-25",
       "Category": "ENVIRONMENTAL MONITORING",
-      "Detail": "Air (Internal)",
+      "Detail": "FAA internal",
       "Location": "DIWMC",
       "Value": "N/A"
     },
     {
       "Date": "Sep-25",
       "Category": "ENVIRONMENTAL MONITORING",
-      "Detail": "Air (Internal)",
+      "Detail": "FAA internal",
       "Location": "JIWRC",
       "Value": "(H2S)=16hrs, (NMHC)=53, (Benzene)=356"
     },
@@ -1506,6 +1618,62 @@
     },
     {
       "Date": "Oct-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Pond",
+      "Location": "YIWRC",
+      "Value": 2946
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Pond",
+      "Location": "AI JOHFA",
+      "Value": 8295
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Pond",
+      "Location": "DIWMC",
+      "Value": 20594
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Pond",
+      "Location": "JIWRC",
+      "Value": 3310
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Landfill",
+      "Location": "YIWRC",
+      "Value": 19611
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Landfill",
+      "Location": "AI JOHFA",
+      "Value": 15250
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Landfill",
+      "Location": "DIWMC",
+      "Value": 5972.78
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "DISPOSAL",
+      "Detail": "To Landfill",
+      "Location": "JIWRC",
+      "Value": 2472
+    },
+    {
+      "Date": "Oct-25",
       "Category": "BACKLOG",
       "Detail": "Solid",
       "Location": "YIWRC",
@@ -1731,28 +1899,28 @@
     {
       "Date": "Oct-25",
       "Category": "ENVIRONMENTAL MONITORING",
-      "Detail": "Air (Internal)",
+      "Detail": "FAA internal",
       "Location": "YIWRC",
       "Value": "205 Hrs (MNHC), 125 Hrs Benzen, 1 Hrs (H2S)"
     },
     {
       "Date": "Oct-25",
       "Category": "ENVIRONMENTAL MONITORING",
-      "Detail": "Air (Internal)",
+      "Detail": "FAA internal",
       "Location": "AI JOHFA",
       "Value": "N/A"
     },
     {
       "Date": "Oct-25",
       "Category": "ENVIRONMENTAL MONITORING",
-      "Detail": "Air (Internal)",
+      "Detail": "FAA internal",
       "Location": "DIWMC",
       "Value": "N/A"
     },
     {
       "Date": "Oct-25",
       "Category": "ENVIRONMENTAL MONITORING",
-      "Detail": "Air (Internal)",
+      "Detail": "FAA internal",
       "Location": "JIWRC",
       "Value": ""
     },
@@ -2087,6 +2255,90 @@
       "Detail": "All",
       "Location": "JIWRC",
       "Value": 15442
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "ENVIRONMENTAL MONITORING",
+      "Detail": "Manhole",
+      "Location": "YIWRC",
+      "Value": "Exceeding (LF C1 - MH 1, 2 & 3)"
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "ENVIRONMENTAL MONITORING",
+      "Detail": "Manhole",
+      "Location": "AI JOHFA",
+      "Value": "Exceeding (J12 C2 N2)"
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "ENVIRONMENTAL MONITORING",
+      "Detail": "Manhole",
+      "Location": "DIWMC",
+      "Value": "N/A"
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "ENVIRONMENTAL MONITORING",
+      "Detail": "Manhole",
+      "Location": "JIWRC",
+      "Value": "Pass"
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "ENVIRONMENTAL MONITORING",
+      "Detail": "Manhole",
+      "Location": "YIWRC",
+      "Value": "Exceeding (LF C1 - MH 1, 2 & 3)"
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "ENVIRONMENTAL MONITORING",
+      "Detail": "Manhole",
+      "Location": "AI JOHFA",
+      "Value": "Exceeding (J12 C2 N2)"
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "ENVIRONMENTAL MONITORING",
+      "Detail": "Manhole",
+      "Location": "DIWMC",
+      "Value": "N/A"
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "ENVIRONMENTAL MONITORING",
+      "Detail": "Manhole",
+      "Location": "JIWRC",
+      "Value": "Pass"
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "ENVIRONMENTAL MONITORING",
+      "Detail": "Manhole",
+      "Location": "YIWRC",
+      "Value": "Exceeding (LF C1 - MH 1, 2 & 3)"
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "ENVIRONMENTAL MONITORING",
+      "Detail": "Manhole",
+      "Location": "AI JOHFA",
+      "Value": "Exceeding (J12 C2 N2)"
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "ENVIRONMENTAL MONITORING",
+      "Detail": "Manhole",
+      "Location": "DIWMC",
+      "Value": "N/A"
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "ENVIRONMENTAL MONITORING",
+      "Detail": "Manhole",
+      "Location": "JIWRC",
+      "Value": "Pass"
     }
   ]
 }
