@@ -151,16 +151,18 @@ footer { text-align: center; padding: 2rem; color: var(--text-secondary); font-s
     <div class="chart-container"><canvas id="recoveryTrendChart"></canvas></div>
   </div>
   
+  <div class="two-chart-equal-grid fade-in">
+    <div class="chart-container"><canvas id="dieselChart"></canvas></div>
+    <div class="chart-container"><canvas id="waterChart"></canvas></div>
+  </div>
+
   <div class="chart-grid fade-in">
-    <div class="chart-container"><canvas id="utilityChart"></canvas></div>
     <div class="chart-container"><canvas id="solidificationChart"></canvas></div>
+    <div class="chart-container"><canvas id="disposalChart"></canvas></div>
   </div>
 
   <div class="section-header fade-in">
     <h2>📦 Resource Management & Efficiency</h2>
-  </div>
-  <div class="chart-grid fade-in">
-    <div class="chart-container"><canvas id="treatmentEfficiencyChart"></canvas></div>
   </div>
 
   <div class="chart-grid fade-in">
@@ -168,7 +170,7 @@ footer { text-align: center; padding: 2rem; color: var(--text-secondary); font-s
   </div>
 
   <div class="section-header fade-in">
-    <h2>📋 Compliance & Waste Management</h2>
+    <h2>📋 Compliance Findings</h2>
   </div>
   <div class="chart-grid fade-in">
     <div class="chart-container"><canvas id="observationChart"></canvas></div>
@@ -205,7 +207,19 @@ let currentPeriod = 'YTD', currentLocation = 'ALL';
 function createFilterButtons() {
   const periodContainer = document.getElementById('periodButtons');
   periodContainer.innerHTML = '';
-  ['YTD', ...availablePeriods].forEach(period => {
+  
+  // Sort periods chronologically (by month-year format)
+  const sortedPeriods = [...availablePeriods].sort((a, b) => {
+    const monthOrder = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 
+                        'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12};
+    const [monthA, yearA] = a.split('-');
+    const [monthB, yearB] = b.split('-');
+    const yearDiff = parseInt(yearA) - parseInt(yearB);
+    if (yearDiff !== 0) return yearDiff;
+    return monthOrder[monthA] - monthOrder[monthB];
+  });
+  
+  ['YTD', ...sortedPeriods].forEach(period => {
     const btn = document.createElement('button');
     btn.className = 'filter-btn';
     btn.textContent = period;
@@ -303,12 +317,13 @@ function processChartData(rows, allPeriods, allLocations) {
     operational_flow: processOperationalFlow(rows, allPeriods),
     facility_comparison: processFacilityComparison(rows, allLocations),
     recovery_overview: processRecoveryOverview(rows, allLocations),
-    utility_consumption: processUtilityConsumption(rows, allLocations),
+    diesel_consumption: processDieselConsumption(rows, allLocations),
+    water_consumption_bar: processWaterConsumptionBar(rows, allLocations),
     solidification_ratio: processSolidificationRatio(rows),
+    disposal_data: processDisposalData(rows, allLocations),
     observation_status: processObservationStatus(rows, allLocations),
     environmental_monitoring: processEnvironmentalMonitoring(rows),
     waste_hierarchy: processWasteHierarchy(rows),
-    treatment_efficiency: processTreatmentEfficiency(rows, allLocations),
     water_consumption: processWaterConsumption(rows, allLocations),
     backlog_data: processBacklogData(rows, allLocations)
   };
@@ -386,21 +401,46 @@ function processRecoveryOverview(rows, locations) {
     return data;
 }
 
-function processUtilityConsumption(rows, locations) {
-    const data = {};
-    const categories = ['DIESEL', 'PORTABLE WATER'];
-    const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
-    
-    categories.forEach(cat => data[cat] = {});
-    relevantLocations.forEach(loc => { categories.forEach(cat => data[cat][loc] = 0); });
+function processDieselConsumption(rows, locations) {
+  const data = {};
+  const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
+  
+  relevantLocations.forEach(loc => { data[loc] = 0; });
 
-    rows.filter(r => categories.includes(r.Category)).forEach(row => {
-        const value = parseFloat(row.Value) || 0;
-        if (data[row.Category] && data[row.Category][row.Location] !== undefined) {
-             data[row.Category][row.Location] += value;
-        }
-    });
-    return data;
+  rows.filter(r => r.Category === 'DIESEL').forEach(row => {
+    const value = parseFloat(row.Value) || 0;
+    if (data[row.Location] !== undefined) {
+      data[row.Location] += value;
+    }
+  });
+
+  const filteredLocations = relevantLocations.filter(loc => data[loc] > 0).sort();
+
+  return {
+    labels: filteredLocations,
+    data: filteredLocations.map(loc => data[loc])
+  };
+}
+
+function processWaterConsumptionBar(rows, locations) {
+  const data = {};
+  const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
+  
+  relevantLocations.forEach(loc => { data[loc] = 0; });
+
+  rows.filter(r => r.Category === 'PORTABLE WATER').forEach(row => {
+    const value = parseFloat(row.Value) || 0;
+    if (data[row.Location] !== undefined) {
+      data[row.Location] += value;
+    }
+  });
+
+  const filteredLocations = relevantLocations.filter(loc => data[loc] > 0).sort();
+
+  return {
+    labels: filteredLocations,
+    data: filteredLocations.map(loc => data[loc])
+  };
 }
 
 function processSolidificationRatio(rows) {
@@ -412,6 +452,37 @@ function processSolidificationRatio(rows) {
   });
   const sortedLabels = Object.keys(data).sort();
   return { labels: sortedLabels, data: sortedLabels.map(label => data[label]) };
+}
+
+function processDisposalData(rows, locations) {
+  const data = {};
+  const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
+  
+  relevantLocations.forEach(loc => {
+    data[loc] = { pond: 0, landfill: 0 };
+  });
+
+  rows.filter(r => r.Category === 'DISPOSAL').forEach(row => {
+    const value = parseFloat(row.Value) || 0;
+    const loc = row.Location;
+    if (data[loc]) {
+      if (row.Detail === 'To Pond') {
+        data[loc].pond += value;
+      } else if (row.Detail === 'To Landfill') {
+        data[loc].landfill += value;
+      }
+    }
+  });
+
+  const filteredLocations = relevantLocations.filter(loc => 
+    data[loc].pond > 0 || data[loc].landfill > 0
+  ).sort();
+
+  return {
+    labels: filteredLocations,
+    pond: filteredLocations.map(loc => data[loc].pond),
+    landfill: filteredLocations.map(loc => data[loc].landfill)
+  };
 }
 
 function processObservationStatus(rows, locations) {
@@ -473,42 +544,6 @@ function processWasteHierarchy(rows) {
   const totalHierarchy = hierarchy.values.reduce((a, b) => a + b, 0) || 1;
   hierarchy.percentages = hierarchy.values.map(v => Math.round((v / totalHierarchy) * 100));
   return hierarchy;
-}
-
-function processTreatmentEfficiency(rows, locations) {
-  const data = {};
-  const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
-  
-  relevantLocations.forEach(loc => {
-    data[loc] = { 
-      solid_incoming: 0, 
-      liquid_incoming: 0
-    };
-  });
-
-  rows.forEach(row => {
-    const value = parseFloat(row.Value) || 0;
-    const loc = row.Location;
-    if (data[loc]) {
-      if (row.Category === 'INCOMING WASTE') {
-        if (row.Detail.toLowerCase() === 'solid') {
-          data[loc].solid_incoming += value;
-        } else if (row.Detail.toLowerCase() === 'liquid') {
-          data[loc].liquid_incoming += value;
-        }
-      }
-    }
-  });
-
-  const filteredLocations = relevantLocations.filter(loc => 
-    data[loc].solid_incoming > 0 || data[loc].liquid_incoming > 0
-  ).sort();
-
-  return {
-    labels: filteredLocations,
-    solid_incoming: filteredLocations.map(loc => data[loc].solid_incoming),
-    liquid_incoming: filteredLocations.map(loc => data[loc].liquid_incoming)
-  };
 }
 
 function processWaterConsumption(rows, locations) {
@@ -601,11 +636,12 @@ function renderCharts(charts) {
   Object.values(chartInstances).forEach(chart => chart?.destroy());
   chartInstances = {};
   chartInstances.combo = createComboChart('incomingWasteChart', charts.operational_flow, 'Incoming vs. Treated Waste');
-  chartInstances.facilityComparison = createFacilityComparisonChart('treatmentChart', charts.facility_comparison, 'Incoming Materials By Facility');
+  chartInstances.facilityComparison = createFacilityComparisonChart('treatmentChart', charts.facility_comparison, 'Distribution of Waste Streams');
   chartInstances.recovery = createLineChart('recoveryTrendChart', charts.recovery_overview, 'Recovery Overview');
-  chartInstances.utility = createStackedBarChart('utilityChart', charts.utility_consumption, 'Utility Consumption');
+  chartInstances.diesel = createDieselChart('dieselChart', charts.diesel_consumption, '⛽ Diesel Consumption');
+  chartInstances.waterBar = createWaterBarChart('waterChart', charts.water_consumption_bar, '💧 Portable Water Consumption');
   chartInstances.solidification = createSimpleLineChart('solidificationChart', charts.solidification_ratio, 'Solidification Ratio');
-  chartInstances.treatmentEfficiency = createTreatmentEfficiencyChart('treatmentEfficiencyChart', charts.treatment_efficiency, '📊 Treatment Efficiency ');
+  chartInstances.disposal = createDisposalChart('disposalChart', charts.disposal_data, '🗑️ Disposal By Facility');
   chartInstances.backlog = createBacklogChart('backlogChart', charts.backlog_data, '📦 Waste Backlog by Facility');
   chartInstances.waterConsumption = createWaterConsumptionPie('waterConsumptionChart', charts.water_consumption, '💧 Water Consumption by Location');
   chartInstances.observation = createObservationChart('observationChart', charts.observation_status);
@@ -635,7 +671,7 @@ function createComboChart(canvasId, data, title) {
         options: {
             responsive: true, maintainAspectRatio: false,
             plugins: {
-                title: { display: true, text: title, font: { size: 16, weight: '600' } },
+                title: { display: false },
                 legend: { position: 'bottom' },
                 datalabels: { display: true },
                 tooltip: { mode: 'index', intersect: false, callbacks: { label: c => `${c.dataset.label || ''}: ${c.parsed.y.toLocaleString(undefined, {maximumFractionDigits: 0})} Tons` } }
@@ -700,34 +736,88 @@ function createLineChart(canvasId, data, title) {
   });
 }
 
-function createStackedBarChart(canvasId, data, title) {
-  const canvas = document.getElementById(canvasId); if (!canvas) return null;
-  const ctx = canvas.getContext('2d');
-  if (!data || Object.keys(data).length === 0) { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No utility data.', canvas.width / 2, canvas.height / 2); return null; }
-  const categories = Object.keys(data);
-  const locations = [...new Set(Object.values(data).flatMap(Object.keys))].sort();
-  const colors = ['#635d9e', '#66a286', '#54c0e8', '#5f84b5'];
-  const datasets = categories.map((cat, i) => ({ 
-    label: cat === 'DIESEL' ? 'Diesel (Liters)' : 'Portable Water (Liters)', 
-    data: locations.map(loc => data[cat]?.[loc] || 0), 
-    backgroundColor: colors[i % colors.length], 
-    borderRadius: 6,
-    datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, anchor: 'center', align: 'center', formatter: (v) => v > 0 ? (v > 1000000 ? (v / 1000000).toFixed(1) + 'M' : v > 1000 ? (v / 1000).toFixed(0) + 'k' : v) : '' }
-  }));
-  return new Chart(ctx, { 
-    type: 'bar', 
-    data: { labels: locations, datasets }, 
-    options: { 
-      responsive: true, 
-      maintainAspectRatio: false, 
-      plugins: { 
-        title: { display: true, text: title, font: { size: 16, weight: '600' } }, 
-        legend: { position: 'bottom' },
-        datalabels: { display: true }
-      }, 
-      scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Liters' } } } 
-    } 
-  });
+function createDieselChart(canvasId, data, title) {
+    const canvas = document.getElementById(canvasId); if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    if (!data || !data.labels || data.labels.length === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No diesel data available.', canvas.width / 2, canvas.height / 2); return null;
+    }
+    
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Diesel (Liters)',
+                data: data.data,
+                backgroundColor: '#635d9e',
+                borderRadius: 6,
+                datalabels: { 
+                    display: true, 
+                    color: '#fff', 
+                    font: { weight: 'bold', size: 10 }, 
+                    anchor: 'center', 
+                    align: 'center', 
+                    formatter: (v) => v > 0 ? (v > 1000 ? (v / 1000).toFixed(0) + 'k' : v) : '' 
+                }
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: title, font: { size: 16, weight: '600' } },
+                legend: { display: false },
+                datalabels: { display: true },
+                tooltip: { callbacks: { label: c => `Diesel: ${c.raw.toLocaleString()} Liters` } }
+            },
+            scales: { 
+                x: { grid: { display: false } }, 
+                y: { beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Liters' } } 
+            }
+        }
+    });
+}
+
+function createWaterBarChart(canvasId, data, title) {
+    const canvas = document.getElementById(canvasId); if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    if (!data || !data.labels || data.labels.length === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No water data available.', canvas.width / 2, canvas.height / 2); return null;
+    }
+    
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Portable Water (Liters)',
+                data: data.data,
+                backgroundColor: '#66a286',
+                borderRadius: 6,
+                datalabels: { 
+                    display: true, 
+                    color: '#fff', 
+                    font: { weight: 'bold', size: 10 }, 
+                    anchor: 'center', 
+                    align: 'center', 
+                    formatter: (v) => v > 0 ? (v > 1000000 ? (v / 1000000).toFixed(1) + 'M' : v > 1000 ? (v / 1000).toFixed(0) + 'k' : v) : '' 
+                }
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: title, font: { size: 16, weight: '600' } },
+                legend: { display: false },
+                datalabels: { display: true },
+                tooltip: { callbacks: { label: c => `Water: ${c.raw.toLocaleString()} Liters` } }
+            },
+            scales: { 
+                x: { grid: { display: false } }, 
+                y: { beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Liters' } } 
+            }
+        }
+    });
 }
 
 function createSimpleLineChart(canvasId, data, title) {
@@ -737,7 +827,6 @@ function createSimpleLineChart(canvasId, data, title) {
         ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No solidification data.', canvas.width / 2, canvas.height / 2); return null;
     }
     
-    // Create target line data (1.0 for all points)
     const targetLineData = data.labels.map(() => 1.0);
     
     return new Chart(ctx, { 
@@ -790,25 +879,19 @@ function createSimpleLineChart(canvasId, data, title) {
     });
 }
 
-// MODIFIED: Updated to show solid, liquid, and total solid + liquid
-function createTreatmentEfficiencyChart(canvasId, data, title) {
+function createDisposalChart(canvasId, data, title) {
     const canvas = document.getElementById(canvasId); if (!canvas) return null;
     const ctx = canvas.getContext('2d');
     if (!data || !data.labels || data.labels.length === 0) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No efficiency data available.', canvas.width / 2, canvas.height / 2); return null;
+        ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No disposal data available.', canvas.width / 2, canvas.height / 2); return null;
     }
-    
-    // Calculate total solid + liquid for each location
-    const totalSolidLiquid = data.solid_incoming.map((solid, i) => solid + data.liquid_incoming[i]);
-    
     return new Chart(ctx, {
         type: 'bar',
         data: {
             labels: data.labels,
             datasets: [
-                { label: 'Solid Incoming (Tons)', data: data.solid_incoming, backgroundColor: '#635d9e', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
-                { label: 'Liquid Incoming (Tons)', data: data.liquid_incoming, backgroundColor: '#54c0e8', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
-                { label: 'Total Solid + Liquid (Tons)', data: totalSolidLiquid, backgroundColor: '#66a286', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
+                { label: 'To Pond (Tons)', data: data.pond, backgroundColor: '#54c0e8', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
+                { label: 'To Landfill (Tons)', data: data.landfill, backgroundColor: '#635d9e', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
             ]
         },
         options: {
@@ -908,11 +991,9 @@ function createObservationChart(canvasId, obsData) {
     if (totalsEl) totalsEl.innerHTML = `<span style="color: #635d9e;">Total Open: ${obsData.totals.open}</span> | <span style="color: #66a286;">Total Closed: ${obsData.totals.closed}</span>`;
 
     const datasets = [
-        // --- Open Observations ---
         { label: 'High - Open', data: obsData.datasets['High (Critical)_Open'], backgroundColor: '#635d9e', stack: 'Open', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? v : '' } },
         { label: 'Medium - Open', data: obsData.datasets['Medium_Open'], backgroundColor: '#66a286', stack: 'Open', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? v : '' } },
         { label: 'Low - Open', data: obsData.datasets['Low_Open'], backgroundColor: '#54c0e8', stack: 'Open', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? v : '' } },
-        // --- Closed Observations ---
         { label: 'High - Closed', data: obsData.datasets['High (Critical)_Closed'], backgroundColor: '#a5a1c7', stack: 'Closed', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? v : '' } },
         { label: 'Medium - Closed', data: obsData.datasets['Medium_Closed'], backgroundColor: '#a7c9b8', stack: 'Closed', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? v : '' } },
         { label: 'Low - Closed', data: obsData.datasets['Low_Closed'], backgroundColor: '#a2dcf3', stack: 'Closed', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? v : '' } }
@@ -924,7 +1005,7 @@ function createObservationChart(canvasId, obsData) {
         options: { 
             responsive: true, maintainAspectRatio: false,
             plugins: { 
-                title: { display: false }, 
+                title: { display: true, text: 'Compliance Findings', font: { size: 16, weight: '600' } }, 
                 legend: { position: 'bottom' },
                 datalabels: { display: true },
                 tooltip: { mode: 'index' }
@@ -942,11 +1023,20 @@ function buildTable(tableId, data) {
   if (!data || data.length === 0) { table.innerHTML = '<tbody><tr><td colspan="100" style="text-align:center; padding: 2rem; color: #718096;">No environmental data.</td></tr></tbody>'; return; }
   const grouped = {};
   data.forEach(row => { if (!grouped[row.Parameter]) grouped[row.Parameter] = {}; grouped[row.Parameter][row.Location] = { current: row.Status }; });
-  const metrics = Object.keys(grouped).sort();
+  const parameterOrder = ['Air (3rd Party)', 'FAA internal', 'Ground Water', 'Manhole', 'Noise'];
+  const metrics = parameterOrder.filter(param => grouped[param]);
   const locations = Array.from(new Set(data.map(d => d.Location))).sort();
-  function getStatusClass(v) { const val = String(v).toLowerCase().trim(); if (['pass'].some(s => val.includes(s))) return 'pass'; if (['warning', 'caution', 'within'].some(s => val.includes(s))) return 'warning'; if (['fail', 'exceeding', 'exceeded', 'non-compliant'].some(s => val.includes(s))) return 'fail'; return 'info'; }
+  function getStatusClass(v) { 
+    const val = String(v).toLowerCase().trim(); 
+    if (val === 'n/a' || val === 'na') return 'na';
+    if (['pass'].some(s => val.includes(s))) return 'pass'; 
+    if (['exceeding', 'exceeded', 'excceeding'].some(s => val.includes(s))) return 'fail'; 
+    if (['warning', 'caution', 'within'].some(s => val.includes(s))) return 'warning'; 
+    if (['fail', 'non-compliant'].some(s => val.includes(s))) return 'fail'; 
+    return 'info'; 
+  }
   function formatCellContent(v) { if (v === null || v === undefined) return '<span class="status-badge status-na">N/A</span>'; const className = getStatusClass(v); const displayValue = v.length > 30 ? v.substring(0, 27) + '...' : v; return `<span class="status-badge status-${className}" title="${v}">${displayValue}</span>`; }
-  const getMetricIcon = (n) => ({ 'ground water': '💧', 'air': '💨', 'soil': '🌱', 'noise': '🔊' }[n.toLowerCase()] || '📋');
+  const getMetricIcon = (n) => ({ 'ground water': '💧', 'air': '💨', 'air (3rd party)': '💨', 'air (internal)': '💨', 'faa internal': '💨', 'soil': '🌱', 'noise': '🔊', 'manhole': '🕳️' }[n.toLowerCase()] || '📋');
   let headerRow = '<thead><tr><th>Environmental Parameter</th>';
   locations.forEach(loc => { headerRow += `<th>${loc}</th>`; });
   headerRow += '</tr></thead>';
@@ -972,30 +1062,37 @@ function renderWasteHierarchyPyramid(data) {
   
   const { labels, values, percentages } = data;
   const icons = ['🔄', '♻️', '🔧', '🗑️'];
-  const colors = ['#66a286', '#54c0e8', '#5f84b5', '#635d9e'];
   
-  // Sort values in descending order for pyramid
-  const sortedData = labels.map((label, i) => ({
-    label,
-    value: values[i],
-    percentage: percentages[i],
-    icon: icons[i],
-    color: colors[i]
-  })).sort((a, b) => b.value - a.value);
+  // Fixed order: Reuse, Source Recovery, Recycle, Treatment(Disposal) - from bottom to top
+  const orderedLabels = ['Reuse', 'Source Recovery', 'Recycle', 'Treatment (Disposal)'];
+  const orderedColors = ['#66a286', '#5f84b5', '#54c0e8', '#635d9e'];
+  const orderedIcons = ['🔄', '🔧', '♻️', '🗑️'];
   
-  // Calculate pyramid dimensions
-  const maxWidth = 80; // percentage of container width
-  const levelHeight = 60; // px
+  const pyramidData = orderedLabels.map((label, i) => {
+    const index = labels.indexOf(label);
+    return {
+      label,
+      value: index !== -1 ? values[index] : 0,
+      percentage: index !== -1 ? percentages[index] : 0,
+      icon: orderedIcons[i],
+      color: orderedColors[i]
+    };
+  });
   
-  container.innerHTML = sortedData.map((item, i) => {
-    const width = maxWidth * (0.5 + (sortedData.length - i) * 0.15);
+  const maxWidth = 85;
+  const levelHeight = 70;
+  
+  container.innerHTML = pyramidData.map((item, i) => {
+    // Reverse pyramid: bottom is widest, top is narrowest
+    const width = maxWidth - ((pyramidData.length - 1 - i) * 12);
     return `
       <div class="pyramid-level" style="
         width: ${width}%;
         height: ${levelHeight}px;
         background: ${item.color};
-        border-radius: ${i === 0 ? '8px 8px 0 0' : i === sortedData.length - 1 ? '0 0 8px 8px' : '0'};
-        margin-top: ${i === 0 ? '0' : '-2px'};
+        border-radius: 8px;
+        margin-top: ${i === 0 ? '0' : '0.5rem'};
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       ">
         <div class="pyramid-label">
           <span>${item.icon}</span>
