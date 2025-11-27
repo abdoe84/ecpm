@@ -146,8 +146,12 @@ footer { text-align: center; padding: 2rem; color: var(--text-secondary); font-s
     <canvas id="incomingWasteChart"></canvas>
   </div>
   
-  <div class="chart-grid fade-in">
+  <div class="two-chart-equal-grid fade-in">
     <div class="chart-container"><canvas id="treatmentChart"></canvas></div>
+    <div class="chart-container"><canvas id="treatmentByFacilityChart"></canvas></div>
+  </div>
+  
+  <div class="chart-grid fade-in">
     <div class="chart-container"><canvas id="recoveryTrendChart"></canvas></div>
   </div>
   
@@ -174,7 +178,6 @@ footer { text-align: center; padding: 2rem; color: var(--text-secondary); font-s
   </div>
   <div class="chart-grid fade-in">
     <div class="chart-container"><canvas id="observationChart"></canvas></div>
-    <div class="chart-container"><canvas id="waterConsumptionChart"></canvas></div>
   </div>
 
   <div class="full-width-chart-container fade-in">
@@ -256,21 +259,48 @@ function selectLocation(location) {
 
 async function loadDashboardData() {
     try {
+        console.log('Attempting to load dashboard_data.json...');
         const response = await fetch('dashboard_data.json');
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status} - Make sure dashboard_data.json is in the same folder as index.html`);
+        }
+        
         const jsonData = await response.json();
+        console.log('Data loaded successfully:', jsonData);
         
         allData = jsonData.Data; 
 
         availablePeriods = [...new Set(allData.map(r => r.Date))].sort();
         availableLocations = [...new Set(allData.map(r => r.Location))].filter(l => l).sort();
         
+        console.log('Available Periods:', availablePeriods);
+        console.log('Available Locations:', availableLocations);
+        
         createFilterButtons();
         updateDashboard();
 
     } catch (error) { 
         console.error('Error loading dashboard data:', error);
-        document.getElementById('kpiSection').innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #ef4444;"><strong>⚠️ Error loading data</strong><br>Please check that 'dashboard_data.json' exists and is correctly formatted.</div>`;
+        
+        const errorMessage = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #ef4444; background: #fee2e2; border-radius: 12px; margin: 2rem;">
+                <h2 style="margin-bottom: 1rem;">⚠️ Error Loading Data</h2>
+                <p style="margin-bottom: 1rem;"><strong>Error:</strong> ${error.message}</p>
+                <div style="text-align: left; max-width: 600px; margin: 0 auto; background: white; padding: 1.5rem; border-radius: 8px;">
+                    <h3 style="margin-bottom: 0.5rem;">Troubleshooting Steps:</h3>
+                    <ol style="margin-left: 1.5rem; line-height: 1.8;">
+                        <li>Make sure <code>dashboard_data.json</code> is in the same folder as <code>index.html</code></li>
+                        <li>If testing locally, use a web server (see README.md)</li>
+                        <li>Check browser console (Press F12) for detailed errors</li>
+                        <li>Clear browser cache and refresh (Ctrl+F5)</li>
+                        <li>If on GitHub Pages, wait 2-3 minutes after uploading files</li>
+                    </ol>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('kpiSection').innerHTML = errorMessage;
     }
 }
 
@@ -316,6 +346,7 @@ function processChartData(rows, allPeriods, allLocations) {
   const charts = {
     operational_flow: processOperationalFlow(rows, allPeriods),
     facility_comparison: processFacilityComparison(rows, allLocations),
+    treatment_by_facility: processTreatmentByFacility(rows, allLocations),
     recovery_overview: processRecoveryOverview(rows, allLocations),
     diesel_consumption: processDieselConsumption(rows, allLocations),
     water_consumption_bar: processWaterConsumptionBar(rows, allLocations),
@@ -383,6 +414,31 @@ function processFacilityComparison(rows, locations) {
             solid: filteredLocations.map(loc => data[loc].solid),
             liquid: filteredLocations.map(loc => data[loc].liquid),
             treated: filteredLocations.map(loc => data[loc].treated),
+        }
+    };
+}
+
+function processTreatmentByFacility(rows, locations) {
+    const data = {};
+    const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
+    relevantLocations.forEach(loc => { data[loc] = { solid: 0, liquid: 0 }; });
+
+    rows.forEach(row => {
+        const value = parseFloat(row.Value) || 0;
+        const loc = row.Location;
+        if (data[loc] && row.Category === 'TREATMENT') {
+            if (row.Detail.toLowerCase() === 'solid') data[loc].solid += value;
+            else if (row.Detail.toLowerCase() === 'liquid') data[loc].liquid += value;
+        }
+    });
+    
+    const filteredLocations = relevantLocations.filter(loc => data[loc].solid > 0 || data[loc].liquid > 0);
+
+    return {
+        labels: filteredLocations,
+        datasets: {
+            solid: filteredLocations.map(loc => data[loc].solid),
+            liquid: filteredLocations.map(loc => data[loc].liquid),
         }
     };
 }
@@ -533,7 +589,7 @@ function processEnvironmentalMonitoring(rows) {
 
 function processWasteHierarchy(rows) {
   const hierarchy = {
-    labels: ['Reuse', 'Recycle', 'Source Recovery', 'Treatment (Disposal)'],
+    labels: ['Reuse', 'Recycle', 'Source Recovery', 'Rejected (Disposal)'],
     values: [0, 0, 0, 0]
   };
   const reuse = rows.filter(r => r.Category === 'REUSE').reduce((sum, r) => sum + (parseFloat(r.Value) || 0), 0);
@@ -637,13 +693,13 @@ function renderCharts(charts) {
   chartInstances = {};
   chartInstances.combo = createComboChart('incomingWasteChart', charts.operational_flow, 'Incoming vs. Treated Waste');
   chartInstances.facilityComparison = createFacilityComparisonChart('treatmentChart', charts.facility_comparison, 'Distribution of Waste Streams');
+  chartInstances.treatmentByFacility = createTreatmentChart('treatmentByFacilityChart', charts.treatment_by_facility, 'Treatment by Facility');
   chartInstances.recovery = createLineChart('recoveryTrendChart', charts.recovery_overview, 'Recovery Overview');
   chartInstances.diesel = createDieselChart('dieselChart', charts.diesel_consumption, '⛽ Diesel Consumption');
   chartInstances.waterBar = createWaterBarChart('waterChart', charts.water_consumption_bar, '💧 Portable Water Consumption');
   chartInstances.solidification = createSimpleLineChart('solidificationChart', charts.solidification_ratio, 'Solidification Ratio');
   chartInstances.disposal = createDisposalChart('disposalChart', charts.disposal_data, '🗑️ Disposal By Facility');
   chartInstances.backlog = createBacklogChart('backlogChart', charts.backlog_data, '📦 Waste Backlog by Facility');
-  chartInstances.waterConsumption = createWaterConsumptionPie('waterConsumptionChart', charts.water_consumption, '💧 Water Consumption by Location');
   chartInstances.observation = createObservationChart('observationChart', charts.observation_status);
   buildTable('environmentTable', charts.environmental_monitoring);
   renderWasteHierarchyPyramid(charts.waste_hierarchy);
@@ -694,6 +750,34 @@ function createFacilityComparisonChart(canvasId, data, title) {
             datasets: [
                 { label: 'Solid Waste (Tons)', data: data.datasets.solid, backgroundColor: '#635d9e', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
                 { label: 'Liquid Waste (Tons)', data: data.datasets.liquid, backgroundColor: '#54c0e8', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
+            ]
+        },
+        options: {
+            indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: title, font: { size: 16, weight: '600' } },
+                legend: { position: 'bottom' },
+                datalabels: { display: true },
+                tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw.toLocaleString()} Tons` } }
+            },
+            scales: { x: { beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Volume (Tons)' } }, y: { grid: { display: false } } }
+        }
+    });
+}
+
+function createTreatmentChart(canvasId, data, title) {
+    const canvas = document.getElementById(canvasId); if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    if (!data || !data.labels || data.labels.length === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No treatment data available.', canvas.width / 2, canvas.height / 2); return null;
+    }
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [
+                { label: 'Solid Treatment (Tons)', data: data.datasets.solid, backgroundColor: '#635d9e', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
+                { label: 'Liquid Treatment (Tons)', data: data.datasets.liquid, backgroundColor: '#54c0e8', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
             ]
         },
         options: {
@@ -1063,8 +1147,8 @@ function renderWasteHierarchyPyramid(data) {
   const { labels, values, percentages } = data;
   const icons = ['🔄', '♻️', '🔧', '🗑️'];
   
-  // Fixed order: Reuse, Source Recovery, Recycle, Treatment(Disposal) - from bottom to top
-  const orderedLabels = ['Reuse', 'Source Recovery', 'Recycle', 'Treatment (Disposal)'];
+  // Fixed order: Reuse, Source Recovery, Recycle, Rejected (Disposal) - from bottom to top
+  const orderedLabels = ['Reuse', 'Source Recovery', 'Recycle', 'Rejected (Disposal)'];
   const orderedColors = ['#66a286', '#5f84b5', '#54c0e8', '#635d9e'];
   const orderedIcons = ['🔄', '🔧', '♻️', '🗑️'];
   
