@@ -181,7 +181,7 @@ footer { text-align: center; padding: 2rem; color: var(--text-secondary); font-s
   </div>
 
   <div class="full-width-chart-container fade-in">
-    <h2><img src="4R.png" alt="4R Icon" class="tiny-icon">   Waste Management Hierarchy</h2>
+    <h2><img src="4R.png" alt="4R Icon" class="tiny-icon">   4R's</h2>
     <div id="hierarchy-pyramid" class="pyramid-container" style="padding: 2rem;"></div>
   </div>
 
@@ -409,7 +409,7 @@ function processOperationalFlow(rows, periods) {
 function processFacilityComparison(rows, locations) {
     const data = {};
     const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
-    relevantLocations.forEach(loc => { data[loc] = { solid: 0, liquid: 0, treated: 0, internal: 0 }; });
+    relevantLocations.forEach(loc => { data[loc] = { solid: 0, liquid: 0, treated: 0, internalSolid: 0, internalLiquid: 0 }; });
 
     rows.forEach(row => {
         const value = parseFloat(row.Value) || 0;
@@ -421,13 +421,14 @@ function processFacilityComparison(rows, locations) {
             } else if (row.Category === 'TREATMENT') {
                 data[loc].treated += value;
             } else if (row.Category === 'INTERNAL GENERATED WASTE') {
-                data[loc].internal += value;
+                if (row.Detail.toLowerCase() === 'solid') data[loc].internalSolid += value;
+                else if (row.Detail.toLowerCase() === 'liquid') data[loc].internalLiquid += value;
             }
         }
     });
     
     const filteredLocations = relevantLocations.filter(loc => 
-        data[loc].solid > 0 || data[loc].liquid > 0 || data[loc].treated > 0 || data[loc].internal > 0
+        data[loc].solid > 0 || data[loc].liquid > 0 || data[loc].treated > 0 || data[loc].internalSolid > 0 || data[loc].internalLiquid > 0
     );
 
     return {
@@ -436,7 +437,8 @@ function processFacilityComparison(rows, locations) {
             solid: filteredLocations.map(loc => data[loc].solid),
             liquid: filteredLocations.map(loc => data[loc].liquid),
             treated: filteredLocations.map(loc => data[loc].treated),
-            internal: filteredLocations.map(loc => data[loc].internal),
+            internalSolid: filteredLocations.map(loc => data[loc].internalSolid),
+            internalLiquid: filteredLocations.map(loc => data[loc].internalLiquid),
         }
     };
 }
@@ -765,7 +767,8 @@ function createFacilityComparisonChart(canvasId, data, title) {
             datasets: [
                 { label: 'Solid Waste (Tons)', data: data.datasets.solid, backgroundColor: '#635d9e', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
                 { label: 'Liquid Waste (Tons)', data: data.datasets.liquid, backgroundColor: '#54c0e8', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
-                { label: 'Internal Generated Waste (Tons)', data: data.datasets.internal, backgroundColor: '#66a286', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
+                { label: 'Internal Generated Solid (Tons)', data: data.datasets.internalSolid, backgroundColor: '#66a286', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
+                { label: 'Internal Generated Liquid (Tons)', data: data.datasets.internalLiquid, backgroundColor: '#5bb4c2', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
             ]
         },
         options: {
