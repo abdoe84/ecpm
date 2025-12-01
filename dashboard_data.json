@@ -2339,6 +2339,102 @@
       "Detail": "Manhole",
       "Location": "JIWRC",
       "Value": "Pass"
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Solid",
+      "Location": "YIWRC",
+      "Value": 1702.7,
+      "Status": "Active"
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Solid",
+      "Location": "AI JOHFA",
+      "Value": 10580,
+      "Status": "Active"
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Solid",
+      "Location": "DIWMC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Solid",
+      "Location": "JIWRC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Solid",
+      "Location": "YIWRC",
+      "Value": 3669.04,
+      "Status": "Active"
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Solid",
+      "Location": "AI JOHFA",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Solid",
+      "Location": "DIWMC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Solid",
+      "Location": "JIWRC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Solid",
+      "Location": "YIWRC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Solid",
+      "Location": "AI JOHFA",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Solid",
+      "Location": "DIWMC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Solid",
+      "Location": "JIWRC",
+      "Value": 0,
+      "Status": "Active"
     }
   ]
 }
