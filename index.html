@@ -155,6 +155,10 @@ footer { text-align: center; padding: 2rem; color: var(--text-secondary); font-s
     <div class="chart-container"><canvas id="recoveryTrendChart"></canvas></div>
   </div>
   
+  <div class="section-header fade-in">
+    <h2>📊 UTILITY</h2>
+  </div>
+  
   <div class="two-chart-equal-grid fade-in">
     <div class="chart-container"><canvas id="dieselChart"></canvas></div>
     <div class="chart-container"><canvas id="waterChart"></canvas></div>
@@ -163,10 +167,6 @@ footer { text-align: center; padding: 2rem; color: var(--text-secondary); font-s
   <div class="chart-grid fade-in">
     <div class="chart-container"><canvas id="solidificationChart"></canvas></div>
     <div class="chart-container"><canvas id="disposalChart"></canvas></div>
-  </div>
-
-  <div class="section-header fade-in">
-    <h2>📦 Resource Management & Efficiency</h2>
   </div>
 
   <div class="chart-grid fade-in">
@@ -330,17 +330,35 @@ function processChartData(rows, allPeriods, allLocations) {
     total_incoming: 0,
     total_treatment: 0,
     total_recovery: 0,
-    backlog: 0,
-    total_water: 0
+    backlog: 0
   };
 
+  // For YTD, show last month only. For specific period, show that period
+  let periodsToCount;
+  if (currentPeriod === 'YTD') {
+    // Sort periods chronologically and get the last one
+    const sortedPeriods = [...allPeriods].sort((a, b) => {
+      const monthOrder = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 
+                          'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12};
+      const [monthA, yearA] = a.split('-');
+      const [monthB, yearB] = b.split('-');
+      const yearDiff = parseInt(yearA) - parseInt(yearB);
+      if (yearDiff !== 0) return yearDiff;
+      return monthOrder[monthA] - monthOrder[monthB];
+    });
+    periodsToCount = [sortedPeriods[sortedPeriods.length - 1]]; // Last period only
+  } else {
+    periodsToCount = [currentPeriod];
+  }
+
   rows.forEach(row => {
+    if (!periodsToCount.includes(row.Date)) return; // Only count specified periods
+    
     const value = parseFloat(row.Value) || 0;
     if (row.Category === 'INCOMING WASTE') kpis.total_incoming += value;
     if (row.Category === 'TREATMENT') kpis.total_treatment += value;
     if (row.Category === 'SOURCE RECOVERY') kpis.total_recovery += value;
     if (row.Category === 'BACKLOG') kpis.backlog += value;
-    if (row.Category === 'PORTABLE WATER') kpis.total_water += value;
   });
 
   const charts = {
@@ -391,7 +409,7 @@ function processOperationalFlow(rows, periods) {
 function processFacilityComparison(rows, locations) {
     const data = {};
     const relevantLocations = currentLocation === 'ALL' ? locations : [currentLocation];
-    relevantLocations.forEach(loc => { data[loc] = { solid: 0, liquid: 0, treated: 0 }; });
+    relevantLocations.forEach(loc => { data[loc] = { solid: 0, liquid: 0, treated: 0, internal: 0 }; });
 
     rows.forEach(row => {
         const value = parseFloat(row.Value) || 0;
@@ -402,11 +420,15 @@ function processFacilityComparison(rows, locations) {
                 else if (row.Detail.toLowerCase() === 'liquid') data[loc].liquid += value;
             } else if (row.Category === 'TREATMENT') {
                 data[loc].treated += value;
+            } else if (row.Category === 'INTERNAL GENERATED WASTE') {
+                data[loc].internal += value;
             }
         }
     });
     
-    const filteredLocations = relevantLocations.filter(loc => data[loc].solid > 0 || data[loc].liquid > 0 || data[loc].treated > 0);
+    const filteredLocations = relevantLocations.filter(loc => 
+        data[loc].solid > 0 || data[loc].liquid > 0 || data[loc].treated > 0 || data[loc].internal > 0
+    );
 
     return {
         labels: filteredLocations,
@@ -414,6 +436,7 @@ function processFacilityComparison(rows, locations) {
             solid: filteredLocations.map(loc => data[loc].solid),
             liquid: filteredLocations.map(loc => data[loc].liquid),
             treated: filteredLocations.map(loc => data[loc].treated),
+            internal: filteredLocations.map(loc => data[loc].internal),
         }
     };
 }
@@ -589,7 +612,7 @@ function processEnvironmentalMonitoring(rows) {
 
 function processWasteHierarchy(rows) {
   const hierarchy = {
-    labels: ['Reuse', 'Recycle', 'Source Recovery', 'Rejected (Disposal)'],
+    labels: ['Reuse', 'Recycle', 'Recovered', 'Rejected (Disposal)'],
     values: [0, 0, 0, 0]
   };
   const reuse = rows.filter(r => r.Category === 'REUSE').reduce((sum, r) => sum + (parseFloat(r.Value) || 0), 0);
@@ -665,23 +688,15 @@ function renderKPIs(kpis) {
     { key: 'total_incoming', icon: '📥', label: 'Incoming Waste', class: 'info' },
     { key: 'total_treatment', icon: '⚗️', label: 'Treatment Volume', class: 'warning' },
     { key: 'total_recovery', icon: '♻️', label: 'Resource Recovery', class: 'success' },
-    { key: 'total_water', icon: '💧', label: 'Water Consumption', class: 'info' },
     { key: 'backlog', icon: '📦', label: 'Backlog', class: '' }
   ];
   kpiConfig.forEach(config => {
     const value = kpis[config.key] || 0;
     const card = document.createElement('div');
     card.className = `kpi-card ${config.class}`;
-    let displayValue, unit;
     
-    if (config.key === 'total_water') {
-      const millions = value / 1000000;
-      displayValue = millions.toFixed(1);
-      unit = ' Million L';
-    } else {
-      displayValue = value.toLocaleString(undefined, {maximumFractionDigits: 0});
-      unit = config.key === 'total_water' ? ' Liters' : ' Tons';
-    }
+    const displayValue = value.toLocaleString(undefined, {maximumFractionDigits: 0});
+    const unit = ' Tons';
     
     card.innerHTML = `<div class="kpi-header"><div class="kpi-icon">${config.icon}</div><div class="kpi-badge">${currentPeriod}</div></div><div class="kpi-content"><h4>${config.label}</h4><div><span class="value">${displayValue}</span><span class="unit">${unit}</span></div></div>`;
     container.appendChild(card);
@@ -749,7 +764,8 @@ function createFacilityComparisonChart(canvasId, data, title) {
             labels: data.labels,
             datasets: [
                 { label: 'Solid Waste (Tons)', data: data.datasets.solid, backgroundColor: '#635d9e', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
-                { label: 'Liquid Waste (Tons)', data: data.datasets.liquid, backgroundColor: '#54c0e8', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
+                { label: 'Liquid Waste (Tons)', data: data.datasets.liquid, backgroundColor: '#54c0e8', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } },
+                { label: 'Internal Generated Waste (Tons)', data: data.datasets.internal, backgroundColor: '#66a286', datalabels: { display: true, color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v > 0 ? (v / 1000).toFixed(1) + 'k' : '' } }
             ]
         },
         options: {
@@ -869,6 +885,10 @@ function createWaterBarChart(canvasId, data, title) {
         ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.font = "16px 'Inter'"; ctx.fillStyle = '#718096'; ctx.textAlign = 'center'; ctx.fillText('No water data available.', canvas.width / 2, canvas.height / 2); return null;
     }
     
+    // Gradient colors for each location - beautiful greens/blues
+    const colors = ['#66a286', '#5bb4c2', '#54c0e8', '#5f84b5'];
+    const backgroundColors = data.labels.map((_, i) => colors[i % colors.length]);
+    
     return new Chart(ctx, {
         type: 'bar',
         data: {
@@ -876,12 +896,12 @@ function createWaterBarChart(canvasId, data, title) {
             datasets: [{
                 label: 'Portable Water (Liters)',
                 data: data.data,
-                backgroundColor: '#66a286',
-                borderRadius: 6,
+                backgroundColor: backgroundColors,
+                borderRadius: 8,
                 datalabels: { 
                     display: true, 
                     color: '#fff', 
-                    font: { weight: 'bold', size: 10 }, 
+                    font: { weight: 'bold', size: 11 }, 
                     anchor: 'center', 
                     align: 'center', 
                     formatter: (v) => v > 0 ? (v > 1000000 ? (v / 1000000).toFixed(1) + 'M' : v > 1000 ? (v / 1000).toFixed(0) + 'k' : v) : '' 
@@ -889,6 +909,7 @@ function createWaterBarChart(canvasId, data, title) {
             }]
         },
         options: {
+            indexAxis: 'y',
             responsive: true, maintainAspectRatio: false,
             plugins: {
                 title: { display: true, text: title, font: { size: 16, weight: '600' } },
@@ -897,8 +918,8 @@ function createWaterBarChart(canvasId, data, title) {
                 tooltip: { callbacks: { label: c => `Water: ${c.raw.toLocaleString()} Liters` } }
             },
             scales: { 
-                x: { grid: { display: false } }, 
-                y: { beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Liters' } } 
+                x: { beginAtZero: true, grid: { color: '#e2e8f0' }, title: { display: true, text: 'Liters' } },
+                y: { grid: { display: false } }
             }
         }
     });
@@ -1147,8 +1168,8 @@ function renderWasteHierarchyPyramid(data) {
   const { labels, values, percentages } = data;
   const icons = ['🔄', '♻️', '🔧', '🗑️'];
   
-  // Fixed order: Reuse, Source Recovery, Recycle, Rejected (Disposal) - from bottom to top
-  const orderedLabels = ['Reuse', 'Source Recovery', 'Recycle', 'Rejected (Disposal)'];
+  // Fixed order: Reuse, Recovered, Recycle, Rejected (Disposal) - from bottom to top
+  const orderedLabels = ['Reuse', 'Recovered', 'Recycle', 'Rejected (Disposal)'];
   const orderedColors = ['#66a286', '#5f84b5', '#54c0e8', '#635d9e'];
   const orderedIcons = ['🔄', '🔧', '♻️', '🗑️'];
   
