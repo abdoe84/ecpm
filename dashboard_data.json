@@ -2435,6 +2435,102 @@
       "Location": "JIWRC",
       "Value": 0,
       "Status": "Active"
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Liquid",
+      "Location": "YIWRC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Liquid",
+      "Location": "AI JOHFA",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Liquid",
+      "Location": "DIWMC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Aug-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Liquid",
+      "Location": "JIWRC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Liquid",
+      "Location": "YIWRC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Liquid",
+      "Location": "AI JOHFA",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Liquid",
+      "Location": "DIWMC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Sep-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Liquid",
+      "Location": "JIWRC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Liquid",
+      "Location": "YIWRC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Liquid",
+      "Location": "AI JOHFA",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Liquid",
+      "Location": "DIWMC",
+      "Value": 0,
+      "Status": "Active"
+    },
+    {
+      "Date": "Oct-25",
+      "Category": "INTERNAL GENERATED WASTE",
+      "Detail": "Liquid",
+      "Location": "JIWRC",
+      "Value": 0,
+      "Status": "Active"
     }
   ]
 }
